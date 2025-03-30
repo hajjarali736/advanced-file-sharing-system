@@ -6,10 +6,13 @@ def handle_client(client_socket):
     try:
         '''
             The client sends 3 kinds of commands:
-            1. UPLOAD <filename> <filesize>: server receives file from client (programmed by Michael)
+            1. UPLOAD <filename> <filesize> <-o>: server receives file from client (programmed by Michael)
             2. DOWNLOAD <filename>: server sends file to client (programmed by Ali)
             3. LIST: server lists files to client (programmed by Michael)
         '''
+        # if the client doesn't send anything in 5 seconds, close the socket
+        client_socket.settimeout(5)  
+        
         # get the command from the client
         command = client_socket.recv(1024).decode('utf-8')
         parts = command.split()
@@ -18,9 +21,10 @@ def handle_client(client_socket):
         file_list = os.listdir("./files")
 
         if parts[0] == "UPLOAD":
+            # remark: <-o> is an optional flag which means "overwrite"
             # ensure command formatted correctly
-            if len(parts) != 3:
-                client_socket.send("ERROR: Invalid number of arguments for the UPLOAD command".encode('utf-8'))
+            if len(parts) < 3 or (len(parts) == 4 and parts[3] != "-o") or len(parts) > 4:
+                client_socket.send("ERROR: Invalid arguments for the UPLOAD command".encode('utf-8'))
                 return
 
             filename = parts[1] # get <filename>
@@ -30,16 +34,18 @@ def handle_client(client_socket):
                 client_socket.send("ERROR: Invalid <filesize> argument".encode('utf-8'))
                 return
 
+            # if overwrite flag is not specified, avoid overwriting
+            if (len(parts) == 3):
             # check if filename already exists in our list of files
-            if filename in file_list:
-                name, ext = os.path.splitext(filename)  # split filename and extension
-                counter = 1
-                while True:
-                    new_name = f"{name}({counter}){ext}"  # append counter before extension
-                    if new_name not in file_list: # change filename to new_name to avoid overwriting
-                        filename = new_name
-                        break
-                    counter += 1
+                if filename in file_list:
+                    name, ext = os.path.splitext(filename)  # split filename and extension
+                    counter = 1
+                    while True:
+                        new_name = f"{name}({counter}){ext}"  # append counter before extension
+                        if new_name not in file_list: # change filename to new_name to avoid overwriting
+                            filename = new_name
+                            break
+                        counter += 1
 
             # receive chunks of 1024 bytes at a time, keep track of received amount
             received_size = 0
@@ -47,8 +53,6 @@ def handle_client(client_socket):
             file_path = os.path.join("files", filename)
 
             try:
-                # if the client doesn't send anything in 5 seconds, close the socket
-                client_socket.settimeout(5)  
                 with open(file_path, "wb") as f:
                     # loop until the full file size is received
                     while received_size < file_size:
