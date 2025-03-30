@@ -1,8 +1,19 @@
 import socket
 import threading
 import os
+import logging
 
-def handle_client(client_socket):
+# configure logging to write to logs.txt
+logging.basicConfig(
+    filename="logs.txt",      # log file name
+    level=logging.INFO,       # log INFO and higher levels (WARNING, ERROR, etc.)
+    format="%(asctime)s - %(message)s"  # log format
+)
+
+def log_message(message):
+    logging.info(message)  # log the message with a timestamp
+
+def handle_client(client_socket, addr):
     try:
         '''
             The client sends 3 kinds of commands:
@@ -11,11 +22,15 @@ def handle_client(client_socket):
             3. LIST: server lists files to client (programmed by Michael)
         '''
         # if the client doesn't send anything in 5 seconds, close the socket
+        log_message(f"Connection with {addr} established")
         client_socket.settimeout(5)  
-        
+
         # get the command from the client
         command = client_socket.recv(1024).decode('utf-8')
         parts = command.split()
+
+        # log the command
+        log_message(f"{addr} issued the command {command}")
 
         # get the list of files (will need in UPLOAD and LIST)
         file_list = os.listdir("./files")
@@ -25,6 +40,7 @@ def handle_client(client_socket):
             # ensure command formatted correctly
             if len(parts) < 3 or (len(parts) == 4 and parts[3] != "-o") or len(parts) > 4:
                 client_socket.send("ERROR: Invalid arguments for the UPLOAD command".encode('utf-8'))
+                log_message(f"ERROR: {addr} sent an invalid <filesize> argument")
                 return
 
             filename = parts[1] # get <filename>
@@ -32,6 +48,7 @@ def handle_client(client_socket):
                 file_size = int(parts[2]) # get <filesize> and convert to int
             except ValueError: # handle invalid <filesize>
                 client_socket.send("ERROR: Invalid <filesize> argument".encode('utf-8'))
+                log_message(f"Connection with {addr} established.\nCommand: {command}")
                 return
 
             # if overwrite flag is not specified, avoid overwriting
@@ -67,6 +84,7 @@ def handle_client(client_socket):
                 # send transfer status to client
                 if received_size == file_size:
                     client_socket.send(f"SUCCESS: File received as {filename}".encode('utf-8'))
+                    log_message(f"SUCCESS: File received as {filename} from {addr}")
                 else:
                     raise ConnectionError("File transfer incomplete")  
 
@@ -74,6 +92,8 @@ def handle_client(client_socket):
                 if os.path.exists(file_path):  # delete incomplete/corrupted file
                     os.remove(file_path)
                 client_socket.send(f"ERROR: {str(e)}".encode('utf-8')) # send the error to client
+                log_message(f"ERROR: File transfer with {addr} interrupted")
+
 
         elif parts[0] == "DOWNLOAD":
             '''ali's code'''
@@ -85,12 +105,15 @@ def handle_client(client_socket):
             for index, filename in enumerate(file_list, start=1):
                 files += f"{index}. {filename}\n"
             client_socket.send(files.encode('utf-8'))
+            log_message(f"File list successfully sent to {addr}")
 
         else:
             client_socket.send("ERROR: Command not recognized by server".encode('utf-8'))
+            log_message(f"ERROR: {addr} sent unrecognized command")
 
     finally:
         # in all cases (even in case of sudden socket closure), close the client socket
+        log_message(f"Closing connection with {addr}")
         client_socket.close()
 
 
@@ -106,5 +129,5 @@ while True:
     print(f"New connection from {addr}")
 
     # create a new thread for each client
-    client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+    client_thread = threading.Thread(target=handle_client, args=(client_socket, addr,))
     client_thread.start()  # thread handles client while server listens to other connections
