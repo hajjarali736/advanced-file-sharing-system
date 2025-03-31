@@ -97,7 +97,58 @@ def handle_client(client_socket, addr):
 
         elif parts[0] == "DOWNLOAD":
             '''ali's code'''
-        
+            try:
+                # ensure command formatted correctly
+                if len(parts) != 2:
+                    client_socket.send("ERROR: Invalid arguments for the DOWNLOAD command".encode('utf-8'))
+                    log_message(f"ERROR: {addr} sent an invalid <filename> argument")
+                    return
+
+                filename = parts[1] # get <filename>
+                file_path = os.path.join("files", filename)
+
+                if not os.path.exists(file_path):
+                    client_socket.send("ERROR: File not found".encode('utf-8'))
+                    log_message(f"ERROR: {addr} sent an invalid <filename> argument")
+                    return
+
+                filesize = os.path.getsize(file_path)
+                client_socket.send(f"filesize {filesize}".encode('utf-8'))
+                log_message(f"File size: {filesize} sent to {addr}")
+
+                client_socket.settimeout(3)
+                try:
+                    start_signal = client_socket.recv(1024).decode('utf-8')
+                    if start_signal != "START":
+                        client_socket.send("ERROR: Invalid start signal".encode('utf-8'))
+                        log_message(f"ERROR: {addr} sent an invalid start signal")
+                        return
+                except socket.timeout:
+                    client_socket.send("ERROR: Timeout waiting for start signal".encode('utf-8'))
+                    log_message(f"ERROR: {addr} timed out waiting for start signal")
+                    return
+
+                log_message(f"Client {addr} is ready. Starting file transfer.")
+
+                counter = 0
+                total_sent = 0
+                with open(file_path, "rb") as f:
+                    # send file in chunks of 1024 bytes
+                    while True:
+                        chunk = f.read(1024)
+                        if not chunk:
+                            break
+                        #ensures that the full chunk is sent over the socket
+                        client_socket.sendall(chunk)
+                        total_sent += len(chunk)
+                        log_message(f"File chunk {counter} sent to {addr} - Progress: {total_sent / filesize * 100:.2f}%")
+                        counter += 1
+                log_message(f"SUCCESS: File {filename} successfully sent to {addr}")
+            
+            except Exception as e:
+                client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
+                log_message(f"ERROR: File transfer with {addr} interrupted")
+            
         elif parts[0] == "LIST":
             # send the client a list of files
             files = ""
