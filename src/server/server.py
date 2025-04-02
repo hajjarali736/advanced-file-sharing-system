@@ -23,7 +23,7 @@ def handle_client(client_socket, addr):
         '''
         # if the client doesn't send anything in 5 seconds, close the socket
         log_message(f"Connection with {addr} established")
-        client_socket.settimeout(5)  
+        # client_socket.settimeout(5)  
 
         # get the command from the client
         command = client_socket.recv(1024).decode('utf-8')
@@ -162,10 +162,13 @@ def handle_client(client_socket, addr):
             client_socket.send("ERROR: Command not recognized by server".encode('utf-8'))
             log_message(f"ERROR: {addr} sent unrecognized command")
 
+
+
     finally:
         # in all cases (even in case of sudden socket closure), close the client socket
         log_message(f"Closing connection with {addr}")
         client_socket.close()
+        print("Connection closed")
 
 
 # create a TCP socket that runs on localhost on port 8926

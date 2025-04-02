@@ -1,0 +1,5 @@
+2025-04-02 13:39:54,362 - Connection with ('127.0.0.1', 60844) established
+2025-04-02 13:39:57,049 - ('127.0.0.1', 60844) issued the command LIST
+2025-04-02 13:39:57,050 - File list successfully sent to ('127.0.0.1', 60844)
+2025-04-02 13:39:57,050 - Closing connection with ('127.0.0.1', 60844)
+2025-04-02 13:39:57,054 - Connection with ('127.0.0.1', 60845) established
