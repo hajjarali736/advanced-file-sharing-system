@@ -1,14 +1,16 @@
-#test test
 from socket import *
 import os
 
 serverName = '127.0.0.1'
 serverPort = 8926  
 
-def upload_file(filename, clientSocket):
+def upload_file(filename, clientSocket, overwrite):
     try:
         filesize = os.path.getsize(filename)
-        clientSocket.send(f"UPLOAD {filename} {filesize}".encode())
+        if overwrite:
+            clientSocket.send(f"UPLOAD {filename} {filesize} -o".encode())
+        else:
+            clientSocket.send(f"UPLOAD {filename} {filesize}".encode())
         
         with open(filename, "rb") as f:
             while True:
@@ -31,7 +33,7 @@ def download_file(filename, clientSocket):
             filesize = int(response.split()[1])
             clientSocket.send("START".encode())
             
-            with open(f"downloaded_{filename}", "wb") as f:
+            with open(filename, "wb") as f:
                 received = 0
                 while received < filesize:
                     chunk = clientSocket.recv(1024)
@@ -46,32 +48,36 @@ def download_file(filename, clientSocket):
     except Exception as e:
         print(f"Download error: {str(e)}")
 
-while True:
-    clientSocket = socket(AF_INET, SOCK_STREAM)
-    clientSocket.connect((serverName, serverPort))
-    
-    
-    command = input("Enter command (LIST/UPLOAD filename/DOWNLOAD filename/EXIT): ").strip().upper()
-    
-    if command == "EXIT":
-        clientSocket.close()
-        break
-    
-    elif command == "LIST":
-        clientSocket.send(b"LIST")
-        print("Available files:")
-        print(clientSocket.recv(4096).decode())
-    
-    elif command.startswith("UPLOAD "):
-        filename = command.split()[1]
-        upload_file(filename, clientSocket)
-    
-    elif command.startswith("DOWNLOAD "):
-        filename = command.split()[1]
-        download_file(filename, clientSocket)
-    
-    else:
-        print("Invalid command. Format:")
-        print("LIST | UPLOAD filename | DOWNLOAD filename | EXIT")
-    
+
+clientSocket = socket(AF_INET, SOCK_STREAM)
+clientSocket.connect((serverName, serverPort))
+
+
+command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | EXIT): ").strip().upper()
+
+if command == "EXIT":
+    clientSocket.send(b"EXIT")
     clientSocket.close()
+    
+
+elif command == "LIST":
+    clientSocket.send(b"LIST")
+    print("Available files:")
+    print(clientSocket.recv(4096).decode())
+
+elif command.startswith("UPLOAD "):
+    filename = command.split()[1]
+    overwrite = False
+    if len(command.split()) == 3 and command.split()[2] == "-o":
+        overwrite = True
+    upload_file(filename, clientSocket, overwrite)
+
+elif command.startswith("DOWNLOAD "):
+    filename = command.split()[1]
+    download_file(filename, clientSocket)
+
+else:
+    print("Invalid command. Format:")
+    print("LIST | UPLOAD filename | DOWNLOAD filename | EXIT")
+
+clientSocket.close()

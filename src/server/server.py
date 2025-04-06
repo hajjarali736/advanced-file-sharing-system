@@ -4,8 +4,10 @@ import os
 import logging
 
 # configure logging to write to logs.txt
+log_file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
+
 logging.basicConfig(
-    filename="logs.txt",      # log file name
+    filename=log_file_path,      # log file name
     level=logging.INFO,       # log INFO and higher levels (WARNING, ERROR, etc.)
     format="%(asctime)s - %(message)s"  # log format
 )
@@ -21,9 +23,7 @@ def handle_client(client_socket, addr):
             2. DOWNLOAD <filename>: server sends file to client (programmed by Ali)
             3. LIST: server lists files to client (programmed by Michael)
         '''
-        # if the client doesn't send anything in 5 seconds, close the socket
         log_message(f"Connection with {addr} established")
-        # client_socket.settimeout(5)  
 
         # get the command from the client
         command = client_socket.recv(1024).decode('utf-8')
@@ -33,7 +33,9 @@ def handle_client(client_socket, addr):
         log_message(f"{addr} issued the command {command}")
 
         # get the list of files (will need in UPLOAD and LIST)
-        file_list = os.listdir("./files")
+        base_path = os.path.dirname(__file__)            # path to server.py
+        files_path = os.path.join(base_path, "files")    # path to server/files
+        file_list = os.listdir(files_path)
 
         if parts[0] == "UPLOAD":
             # remark: <-o> is an optional flag which means "overwrite"
@@ -158,6 +160,10 @@ def handle_client(client_socket, addr):
             client_socket.send(files.encode('utf-8'))
             log_message(f"File list successfully sent to {addr}")
 
+        elif parts[0] == "EXIT":
+            return
+
+
         else:
             client_socket.send("ERROR: Command not recognized by server".encode('utf-8'))
             log_message(f"ERROR: {addr} sent unrecognized command")
@@ -167,8 +173,8 @@ def handle_client(client_socket, addr):
     finally:
         # in all cases (even in case of sudden socket closure), close the client socket
         log_message(f"Closing connection with {addr}")
+        print(f"Connection with {addr} closed")
         client_socket.close()
-        print("Connection closed")
 
 
 # create a TCP socket that runs on localhost on port 8926

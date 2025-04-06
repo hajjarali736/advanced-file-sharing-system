@@ -1,5 +1,53 @@
-2025-04-02 13:39:54,362 - Connection with ('127.0.0.1', 60844) established
-2025-04-02 13:39:57,049 - ('127.0.0.1', 60844) issued the command LIST
-2025-04-02 13:39:57,050 - File list successfully sent to ('127.0.0.1', 60844)
-2025-04-02 13:39:57,050 - Closing connection with ('127.0.0.1', 60844)
-2025-04-02 13:39:57,054 - Connection with ('127.0.0.1', 60845) established
+2025-04-06 21:42:34,672 - Connection with ('127.0.0.1', 64745) established
+2025-04-06 21:42:38,736 - ('127.0.0.1', 64745) issued the command LIST
+2025-04-06 21:42:38,736 - File list successfully sent to ('127.0.0.1', 64745)
+2025-04-06 21:42:38,737 - Closing connection with ('127.0.0.1', 64745)
+2025-04-06 21:42:49,622 - Connection with ('127.0.0.1', 64748) established
+2025-04-06 21:42:58,215 - ('127.0.0.1', 64748) issued the command EXIT
+2025-04-06 21:42:58,216 - Closing connection with ('127.0.0.1', 64748)
+2025-04-06 21:48:45,241 - Connection with ('127.0.0.1', 64782) established
+2025-04-06 21:48:54,829 - ('127.0.0.1', 64782) issued the command DOWNLOAD TEST.TXT
+2025-04-06 21:48:54,830 - ERROR: ('127.0.0.1', 64782) sent an invalid <filename> argument
+2025-04-06 21:48:54,830 - Closing connection with ('127.0.0.1', 64782)
+2025-04-06 21:49:14,543 - Connection with ('127.0.0.1', 64786) established
+2025-04-06 21:49:20,837 - ('127.0.0.1', 64786) issued the command DOWNLOAD TEST
+2025-04-06 21:49:20,837 - ERROR: ('127.0.0.1', 64786) sent an invalid <filename> argument
+2025-04-06 21:49:20,837 - Closing connection with ('127.0.0.1', 64786)
+2025-04-06 21:52:23,236 - Connection with ('127.0.0.1', 64823) established
+2025-04-06 21:53:13,091 - ('127.0.0.1', 64823) issued the command DOWNLOAD TEST.TXT
+2025-04-06 21:53:13,092 - File size: 0 sent to ('127.0.0.1', 64823)
+2025-04-06 21:53:13,092 - Client ('127.0.0.1', 64823) is ready. Starting file transfer.
+2025-04-06 21:53:13,092 - SUCCESS: File TEST.TXT successfully sent to ('127.0.0.1', 64823)
+2025-04-06 21:53:13,093 - Closing connection with ('127.0.0.1', 64823)
+2025-04-06 21:55:05,346 - Connection with ('127.0.0.1', 64847) established
+2025-04-06 21:55:19,312 - ('127.0.0.1', 64847) issued the command DOWNLOAD TEST.TXT
+2025-04-06 21:55:19,313 - File size: 0 sent to ('127.0.0.1', 64847)
+2025-04-06 21:55:19,313 - Client ('127.0.0.1', 64847) is ready. Starting file transfer.
+2025-04-06 21:55:19,313 - SUCCESS: File TEST.TXT successfully sent to ('127.0.0.1', 64847)
+2025-04-06 21:55:19,313 - Closing connection with ('127.0.0.1', 64847)
+2025-04-06 21:55:27,095 - Connection with ('127.0.0.1', 64857) established
+2025-04-06 21:55:34,329 - ('127.0.0.1', 64857) issued the command DOWNLOAD TEST.TXT
+2025-04-06 21:55:34,330 - File size: 0 sent to ('127.0.0.1', 64857)
+2025-04-06 21:55:34,330 - Client ('127.0.0.1', 64857) is ready. Starting file transfer.
+2025-04-06 21:55:34,330 - SUCCESS: File TEST.TXT successfully sent to ('127.0.0.1', 64857)
+2025-04-06 21:55:34,330 - Closing connection with ('127.0.0.1', 64857)
+2025-04-06 21:57:15,055 - Connection with ('127.0.0.1', 64863) established
+2025-04-06 21:57:25,078 - ('127.0.0.1', 64863) issued the command UPLOAD TEST.TXT 0
+2025-04-06 21:57:25,079 - SUCCESS: File received as TEST.TXT from ('127.0.0.1', 64863)
+2025-04-06 21:57:25,079 - Closing connection with ('127.0.0.1', 64863)
+2025-04-06 21:58:15,106 - Connection with ('127.0.0.1', 64871) established
+2025-04-06 21:58:23,899 - ('127.0.0.1', 64871) issued the command UPLOAD TEST.TXT 11
+2025-04-06 21:58:23,907 - SUCCESS: File received as TEST.TXT from ('127.0.0.1', 64871)
+2025-04-06 21:58:23,907 - Closing connection with ('127.0.0.1', 64871)
+2025-04-06 22:00:21,649 - Connection with ('127.0.0.1', 64882) established
+2025-04-06 22:01:13,237 - ('127.0.0.1', 64882) issued the command UPLOAD RANDOMFILE.TXT 25
+2025-04-06 22:01:13,247 - SUCCESS: File received as RANDOMFILE.TXT from ('127.0.0.1', 64882)
+2025-04-06 22:01:13,247 - Closing connection with ('127.0.0.1', 64882)
+2025-04-06 22:12:49,291 - Connection with ('127.0.0.1', 64995) established
+2025-04-06 22:13:04,309 - ('127.0.0.1', 64995) issued the command UPLOAD RANDOMFILE.TXT 25
+2025-04-06 22:13:04,311 - SUCCESS: File received as RANDOMFILE(1).TXT from ('127.0.0.1', 64995)
+2025-04-06 22:13:04,311 - Closing connection with ('127.0.0.1', 64995)
+2025-04-06 22:13:28,560 - Connection with ('127.0.0.1', 65001) established
+2025-04-06 22:13:34,281 - ('127.0.0.1', 65001) issued the command LIST
+2025-04-06 22:13:34,282 - File list successfully sent to ('127.0.0.1', 65001)
+2025-04-06 22:13:34,282 - Closing connection with ('127.0.0.1', 65001)
