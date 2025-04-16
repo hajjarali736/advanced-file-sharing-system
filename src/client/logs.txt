@@ -1,0 +1,8 @@
+2025-04-16 17:55:53,068 - Connection with ('127.0.0.1', 8926) established
+2025-04-16 17:56:14,614 - Invalid command. Format:
+2025-04-16 17:56:14,614 - Connection closed
+2025-04-16 17:56:30,183 - Connection with ('127.0.0.1', 8926) established
+2025-04-16 17:56:37,840 - Requesting download for TEST.TXT
+2025-04-16 17:56:37,840 - File size received: 11 bytes, expected checksum: 1101
+2025-04-16 17:56:37,840 - Downloaded TEST.TXT successfully (checksum verified)
+2025-04-16 17:56:37,840 - Connection closed

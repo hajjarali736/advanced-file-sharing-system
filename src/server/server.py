@@ -3,6 +3,23 @@ import threading
 import os
 import logging
 
+# Function to calculate 16-bit checksum of a file
+def calculate_checksum(filename):
+    checksum = 0
+    try:
+        with open(filename, "rb") as f:
+            while True:
+                chunk = f.read(1024)
+                if not chunk:
+                    break
+                # Sum up ASCII values of all bytes in the file
+                checksum += sum(chunk)
+        # Take modulo 65536 to get 16-bit checksum
+        return checksum % 65536
+    except Exception as e:
+        log_message(f"Error calculating checksum: {str(e)}")
+        return None
+
 # configure logging to write to logs.txt
 log_file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
 
@@ -19,7 +36,7 @@ def handle_client(client_socket, addr):
     try:
         '''
             The client sends 3 kinds of commands:
-            1. UPLOAD <filename> <filesize> <-o>: server receives file from client (programmed by Michael)
+            1. UPLOAD <filename> <filesize> <checksum> <-o>: server receives file from client (programmed by Michael)
             2. DOWNLOAD <filename>: server sends file to client (programmed by Ali)
             3. LIST: server lists files to client (programmed by Michael)
         '''
@@ -40,21 +57,22 @@ def handle_client(client_socket, addr):
         if parts[0] == "UPLOAD":
             # remark: <-o> is an optional flag which means "overwrite"
             # ensure command formatted correctly
-            if len(parts) < 3 or (len(parts) == 4 and parts[3] != "-o") or len(parts) > 4:
+            if len(parts) < 4 or (len(parts) == 5 and parts[4] != "-o") or len(parts) > 5:
                 client_socket.send("ERROR: Invalid arguments for the UPLOAD command".encode('utf-8'))
-                log_message(f"ERROR: {addr} sent an invalid <filesize> argument")
+                log_message(f"ERROR: {addr} sent an invalid UPLOAD command")
                 return
 
             filename = parts[1] # get <filename>
             try:
                 file_size = int(parts[2]) # get <filesize> and convert to int
-            except ValueError: # handle invalid <filesize>
-                client_socket.send("ERROR: Invalid <filesize> argument".encode('utf-8'))
-                log_message(f"Connection with {addr} established.\nCommand: {command}")
+                expected_checksum = int(parts[3]) # get <checksum>
+            except ValueError: # handle invalid <filesize> or <checksum>
+                client_socket.send("ERROR: Invalid <filesize> or <checksum> argument".encode('utf-8'))
+                log_message(f"ERROR: {addr} sent invalid <filesize> or <checksum>")
                 return
 
             # if overwrite flag is not specified, avoid overwriting
-            if (len(parts) == 3):
+            if (len(parts) == 4):
             # check if filename already exists in our list of files
                 if filename in file_list:
                     name, ext = os.path.splitext(filename)  # split filename and extension
@@ -83,19 +101,19 @@ def handle_client(client_socket, addr):
                         f.write(chunk)
                         received_size += len(chunk) # dynamically update receieved amount
 
-                # send transfer status to client
-                if received_size == file_size:
-                    client_socket.send(f"SUCCESS: File received as {filename}".encode('utf-8'))
-                    log_message(f"SUCCESS: File received as {filename} from {addr}")
+                # Verify checksum after receiving file
+                actual_checksum = calculate_checksum(file_path)
+                if actual_checksum == expected_checksum:
+                    client_socket.send(f"SUCCESS: File received as {filename} (checksum verified)".encode('utf-8'))
+                    log_message(f"SUCCESS: File received as {filename} from {addr} (checksum verified)")
                 else:
-                    raise ConnectionError("File transfer incomplete")  
+                    raise ConnectionError("File checksum verification failed")
 
             except Exception as e:
                 if os.path.exists(file_path):  # delete incomplete/corrupted file
                     os.remove(file_path)
                 client_socket.send(f"ERROR: {str(e)}".encode('utf-8')) # send the error to client
-                log_message(f"ERROR: File transfer with {addr} interrupted")
-
+                log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
 
         elif parts[0] == "DOWNLOAD":
             '''ali's code'''
@@ -111,12 +129,18 @@ def handle_client(client_socket, addr):
 
                 if not os.path.exists(file_path):
                     client_socket.send("ERROR: File not found".encode('utf-8'))
-                    log_message(f"ERROR: {addr} sent an invalid <filename> argument")
+                    log_message(f"ERROR: {addr} requested non-existent file {filename}")
                     return
 
                 filesize = os.path.getsize(file_path)
-                client_socket.send(f"filesize {filesize}".encode('utf-8'))
-                log_message(f"File size: {filesize} sent to {addr}")
+                checksum = calculate_checksum(file_path)
+                if checksum is None:
+                    client_socket.send("ERROR: Failed to calculate file checksum".encode('utf-8'))
+                    log_message(f"ERROR: Failed to calculate checksum for {filename}")
+                    return
+
+                client_socket.send(f"filesize {filesize} {checksum}".encode('utf-8'))
+                log_message(f"File size: {filesize} and checksum: {checksum} sent to {addr}")
 
                 client_socket.settimeout(3)
                 try:
@@ -149,8 +173,8 @@ def handle_client(client_socket, addr):
             
             except Exception as e:
                 client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
-                log_message(f"ERROR: File transfer with {addr} interrupted")
-            
+                log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
+
         elif parts[0] == "LIST":
             # send the client a list of files
             files = ""
@@ -163,19 +187,15 @@ def handle_client(client_socket, addr):
         elif parts[0] == "EXIT":
             return
 
-
         else:
             client_socket.send("ERROR: Command not recognized by server".encode('utf-8'))
             log_message(f"ERROR: {addr} sent unrecognized command")
-
-
 
     finally:
         # in all cases (even in case of sudden socket closure), close the client socket
         log_message(f"Closing connection with {addr}")
         print(f"Connection with {addr} closed")
         client_socket.close()
-
 
 # create a TCP socket that runs on localhost on port 8926
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

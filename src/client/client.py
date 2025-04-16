@@ -6,6 +6,23 @@ serverName = '127.0.0.1'
 serverPort = 8926  
 log_file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
 
+# Function to calculate 16-bit checksum of a file
+def calculate_checksum(filename):
+    checksum = 0
+    try:
+        with open(filename, "rb") as f:
+            while True:
+                chunk = f.read(1024)
+                if not chunk:
+                    break
+                # Sum up ASCII values of all bytes in the file
+                checksum += sum(chunk)
+        # Take modulo 65536 to get 16-bit checksum
+        return checksum % 65536
+    except Exception as e:
+        log_message(f"Error calculating checksum: {str(e)}")
+        return None
+
 logging.basicConfig(
     filename=log_file_path,      # log file name
     level=logging.INFO,       # log INFO and higher levels (WARNING, ERROR, etc.)
@@ -19,11 +36,19 @@ def upload_file(filename, clientSocket, overwrite):
     try:
         filesize = os.path.getsize(filename) # automates file size by getting size and inform the server
                                         #how much data it should expect(bytes).
-        log_message(f"Preparing to upload {filename} of size {filesize} bytes")
+        # Calculate checksum before sending
+        checksum = calculate_checksum(filename)
+        if checksum is None:
+            error_message = "Failed to calculate checksum"
+            print(error_message)
+            log_message(error_message)
+            return
+
+        log_message(f"Preparing to upload {filename} of size {filesize} bytes with checksum {checksum}")
         if overwrite:
-            clientSocket.send(f"UPLOAD {filename} {filesize} -o".encode())
+            clientSocket.send(f"UPLOAD {filename} {filesize} {checksum} -o".encode())
         else:
-            clientSocket.send(f"UPLOAD {filename} {filesize}".encode())
+            clientSocket.send(f"UPLOAD {filename} {filesize} {checksum}".encode())
         
         with open(filename, "rb") as f:
             while True:
@@ -49,8 +74,11 @@ def download_file(filename, clientSocket):
         response = clientSocket.recv(1024).decode() #receives its response(either confirmation+file size or error)
         
         if response.startswith("filesize"):
-            filesize = int(response.split()[1])
-            log_message(f"File size received: {filesize} bytes")
+            # Parse filesize and checksum from response
+            parts = response.split()
+            filesize = int(parts[1])
+            expected_checksum = int(parts[2])
+            log_message(f"File size received: {filesize} bytes, expected checksum: {expected_checksum}")
             clientSocket.send("START".encode())
             
             with open(filename, "wb") as f:
@@ -62,9 +90,20 @@ def download_file(filename, clientSocket):
                     f.write(chunk)
                     received += len(chunk) #this block of code creates a new file with prefix downloaded_, 
                                         #receives the file in chunks, and writes it to disk.
-            success_message = f"Downloaded {filename} successfully"
-            print(success_message)
-            log_message(success_message)
+            
+            # Verify checksum after download
+            actual_checksum = calculate_checksum(filename)
+            if actual_checksum == expected_checksum:
+                success_message = f"Downloaded {filename} successfully (checksum verified)"
+                print(success_message)
+                log_message(success_message)
+            else:
+                error_message = f"Checksum verification failed for {filename}. File may be corrupted."
+                print(error_message)
+                log_message(error_message)
+                # Delete corrupted file
+                os.remove(filename)
+                log_message(f"Deleted corrupted file: {filename}")
         else:
             print(response)  # Error message
             log_message(f"Download error: {response}")
@@ -111,7 +150,7 @@ elif command.startswith("DOWNLOAD "):
 else:
     error_message = "Invalid command. Format:"
     print(error_message)
-    print("LIST | UPLOAD filename | DOWNLOAD filename | EXIT") #prints usage info if the command doesn’t match any supported format
+    print("LIST | UPLOAD filename | DOWNLOAD filename | EXIT") #prints usage info if the command doesn't match any supported format
     log_message(error_message)
 
 clientSocket.close()
