@@ -6,6 +6,9 @@ serverName = '127.0.0.1'
 serverPort = 8926  
 log_file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
 
+# Global variable to track download state
+download_state = None
+
 # Function to calculate 16-bit checksum of a file
 def calculate_checksum(filename):
     checksum = 0
@@ -67,10 +70,42 @@ def upload_file(filename, clientSocket, overwrite):
         print(error_message)
         log_message(error_message)
 
-def download_file(filename, clientSocket):
+def save_download_state(filename, offset, total_size):
+    """Save the current download state"""
+    global download_state
+    download_state = {
+        "filename": filename,
+        "offset": offset,
+        "total_size": total_size
+    }
+    log_message(f"Saved download state for {filename} at offset {offset}")
+
+def load_download_state():
+    """Load the current download state"""
+    global download_state
+    return download_state
+
+def clear_download_state():
+    """Clear the download state"""
+    global download_state
+    download_state = None
+    log_message("Cleared download state")
+
+def download_file(filename, clientSocket, resume=False):
     try:
-        log_message(f"Requesting download for {filename}")
-        clientSocket.send(f"DOWNLOAD {filename}".encode()) #sends a message requesting a file from the server
+        if resume:
+            state = load_download_state()
+            if not state or state["filename"] != filename:
+                print("No valid download state found for this file")
+                return
+            offset = state["offset"]
+            total_size = state["total_size"]
+            log_message(f"Resuming download of {filename} from offset {offset}")
+            clientSocket.send(f"DOWNLOAD {filename} {offset}".encode())
+        else:
+            log_message(f"Requesting download for {filename}")
+            clientSocket.send(f"DOWNLOAD {filename}".encode())
+        
         response = clientSocket.recv(1024).decode() #receives its response(either confirmation+file size or error)
         
         if response.startswith("filesize"):
@@ -79,10 +114,15 @@ def download_file(filename, clientSocket):
             filesize = int(parts[1])
             expected_checksum = int(parts[2])
             log_message(f"File size received: {filesize} bytes, expected checksum: {expected_checksum}")
+            
+            if not resume:
+                save_download_state(filename, 0, filesize)
+            
             clientSocket.send("START".encode())
             
-            with open(filename, "wb") as f:
-                received = 0
+            mode = "ab" if resume else "wb"
+            with open(filename, mode) as f:
+                received = offset if resume else 0
                 while received < filesize:
                     chunk = clientSocket.recv(1024)
                     if not chunk:
@@ -90,13 +130,14 @@ def download_file(filename, clientSocket):
                     f.write(chunk)
                     received += len(chunk) #this block of code creates a new file with prefix downloaded_, 
                                         #receives the file in chunks, and writes it to disk.
-            
+                    save_download_state(filename, received, filesize)
             # Verify checksum after download
             actual_checksum = calculate_checksum(filename)
             if actual_checksum == expected_checksum:
                 success_message = f"Downloaded {filename} successfully (checksum verified)"
                 print(success_message)
                 log_message(success_message)
+                clear_download_state()
             else:
                 error_message = f"Checksum verification failed for {filename}. File may be corrupted."
                 print(error_message)
@@ -104,6 +145,7 @@ def download_file(filename, clientSocket):
                 # Delete corrupted file
                 os.remove(filename)
                 log_message(f"Deleted corrupted file: {filename}")
+                clear_download_state()
         else:
             print(response)  # Error message
             log_message(f"Download error: {response}")
@@ -113,12 +155,11 @@ def download_file(filename, clientSocket):
         print(error_message)
         log_message(error_message)
 
-
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))#connects to the server
 log_message(f"Connection with {clientSocket.getpeername()} established")
 
-command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | EXIT): ").strip().upper()
+command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | EXIT): ").strip().upper()
 #prompts the user for a command and turns it into uppercase(to make it case-insensitive)
 
 if command == "EXIT":
@@ -147,10 +188,27 @@ elif command.startswith("DOWNLOAD "):
     filename = command.split()[1]
     download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
 
+elif command == "PAUSE":
+    state = load_download_state()
+    if state:
+        print(f"Download paused: {state['filename']} at {state['offset']}/{state['total_size']} bytes")
+        clientSocket.send(b"PAUSE")
+        log_message("Sent PAUSE command")
+    else:
+        print("No active download to pause")
+
+elif command == "RESUME":
+    state = load_download_state()
+    if state:
+        print(f"Resuming download: {state['filename']} from {state['offset']}/{state['total_size']} bytes")
+        download_file(state['filename'], clientSocket, resume=True)
+    else:
+        print("No paused download to resume")
+
 else:
     error_message = "Invalid command. Format:"
     print(error_message)
-    print("LIST | UPLOAD filename | DOWNLOAD filename | EXIT") #prints usage info if the command doesn't match any supported format
+    print("LIST | UPLOAD filename | DOWNLOAD filename | PAUSE | RESUME | EXIT") #prints usage info if the command doesn't match any supported format
     log_message(error_message)
 
 clientSocket.close()

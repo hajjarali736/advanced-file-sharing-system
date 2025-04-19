@@ -37,8 +37,9 @@ def handle_client(client_socket, addr):
         '''
             The client sends 3 kinds of commands:
             1. UPLOAD <filename> <filesize> <checksum> <-o>: server receives file from client (programmed by Michael)
-            2. DOWNLOAD <filename>: server sends file to client (programmed by Ali)
+            2. DOWNLOAD <filename> [offset]: server sends file to client (programmed by Ali)
             3. LIST: server lists files to client (programmed by Michael)
+            4. PAUSE: client requests to pause current download
         '''
         log_message(f"Connection with {addr} established")
 
@@ -119,12 +120,13 @@ def handle_client(client_socket, addr):
             '''ali's code'''
             try:
                 # ensure command formatted correctly
-                if len(parts) != 2:
+                if len(parts) < 2 or len(parts) > 3:
                     client_socket.send("ERROR: Invalid arguments for the DOWNLOAD command".encode('utf-8'))
                     log_message(f"ERROR: {addr} sent an invalid <filename> argument")
                     return
 
                 filename = parts[1] # get <filename>
+                offset = int(parts[2]) if len(parts) == 3 else 0 # get offset if provided
                 file_path = os.path.join("files", filename)
 
                 if not os.path.exists(file_path):
@@ -133,6 +135,11 @@ def handle_client(client_socket, addr):
                     return
 
                 filesize = os.path.getsize(file_path)
+                if offset >= filesize:
+                    client_socket.send("ERROR: Invalid offset".encode('utf-8'))
+                    log_message(f"ERROR: {addr} sent invalid offset {offset}")
+                    return
+
                 checksum = calculate_checksum(file_path)
                 if checksum is None:
                     client_socket.send("ERROR: Failed to calculate file checksum".encode('utf-8'))
@@ -154,11 +161,12 @@ def handle_client(client_socket, addr):
                     log_message(f"ERROR: {addr} timed out waiting for start signal")
                     return
 
-                log_message(f"Client {addr} is ready. Starting file transfer.")
+                log_message(f"Client {addr} is ready. Starting file transfer from offset {offset}.")
 
                 counter = 0
-                total_sent = 0
+                total_sent = offset
                 with open(file_path, "rb") as f:
+                    f.seek(offset)  # seek to the requested offset
                     # send file in chunks of 1024 bytes
                     while True:
                         chunk = f.read(1024)
@@ -174,6 +182,11 @@ def handle_client(client_socket, addr):
             except Exception as e:
                 client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
                 log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
+
+        elif parts[0] == "PAUSE":
+            log_message(f"Client {addr} requested pause")
+            client_socket.send("PAUSE_ACK".encode('utf-8'))
+            return
 
         elif parts[0] == "LIST":
             # send the client a list of files
