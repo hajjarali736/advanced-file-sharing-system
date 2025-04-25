@@ -1,6 +1,7 @@
 from socket import *
 import os
 import logging
+from time import sleep
 
 serverName = '127.0.0.1'
 serverPort = 8926  
@@ -103,6 +104,8 @@ def download_file(filename, clientSocket, resume=False):
             log_message(f"Resuming download of {filename} from offset {offset}")
             clientSocket.send(f"DOWNLOAD {filename} {offset}".encode())
         else:
+            offset=0#Ranim: I added this to make sure that the offset is defined when not resuming
+            #that is, without it, offset would only be defined in the "resume==True" branch
             log_message(f"Requesting download for {filename}")
             clientSocket.send(f"DOWNLOAD {filename}".encode())
         
@@ -121,21 +124,50 @@ def download_file(filename, clientSocket, resume=False):
             clientSocket.send("START".encode())
             
             mode = "ab" if resume else "wb"
+              #RANIM: im gonna implement the download logic here:
+
             with open(filename, mode) as f:
                 received = offset if resume else 0
-                while received < filesize:
+                while received<filesize:
                     chunk = clientSocket.recv(1024)
                     if not chunk:
                         break
                     f.write(chunk)
                     received += len(chunk) #this block of code creates a new file with prefix downloaded_, 
-                                        #receives the file in chunks, and writes it to disk.
+                                        #receives the file in chunks, and writes it to disk.                 
                     save_download_state(filename, received, filesize)
+                    print(f"Received {received}/{filesize} bytes")
+
+                    action=input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
+                    if action=="CONTINUE":
+                        clientSocket.send(b"CONTINUE")
+                        continue
+                    elif action=="PAUSE":
+                        clientSocket.send(b"PAUSE")
+                        print("Download paused. You can resume later using RESUME.")
+                        log_message("Download paused by user.")
+                        return
+                    
+                    elif action=="STOP":
+                        clientSocket.send(b"STOP")
+                        print("Download stopped by user.")
+                        log_message("Download stopped by user.")
+                        return
+                    
+                    else:
+                        print("Invalid action, Defaulting to CONTINUE")
+                        clientSocket.send(b"CONTINUE")
+
             # Verify checksum after download
+
+          
+
+            
+
             actual_checksum = calculate_checksum(filename)
             if actual_checksum == expected_checksum:
                 success_message = f"Downloaded {filename} successfully (checksum verified)"
-                print(success_message)
+                print(success_message)  
                 log_message(success_message)
                 clear_download_state()
             else:

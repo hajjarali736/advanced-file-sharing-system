@@ -165,18 +165,71 @@ def handle_client(client_socket, addr):
 
                 counter = 0
                 total_sent = offset
-                with open(file_path, "rb") as f:
-                    f.seek(offset)  # seek to the requested offset
-                    # send file in chunks of 1024 bytes
-                    while True:
-                        chunk = f.read(1024)
+                # with open(file_path, "rb") as f:
+                #     f.seek(offset)  # seek to the requested offset
+                #     # send file in chunks of 1024 bytes
+                #     while True:
+                #         chunk = f.read(1024)
+                #         if not chunk:
+                #             break
+                #         #ensures that the full chunk is sent over the socket
+                #         client_socket.sendall(chunk)
+                #         total_sent += len(chunk)
+                #         log_message(f"File chunk {counter} sent to {addr} - Progress: {total_sent / filesize * 100:.2f}%")
+                #         counter += 1
+                #Ranim: I removed this part so that i can implement the download control mechanism
+                 #Ranim's code
+                with open(file_path,"rb") as f:
+                    f.seek(offset)
+                    total_sent=offset
+                    counter=0
+
+                    while total_sent<filesize:
+                        chunk=f.read(1024)
                         if not chunk:
                             break
-                        #ensures that the full chunk is sent over the socket
+
                         client_socket.sendall(chunk)
-                        total_sent += len(chunk)
-                        log_message(f"File chunk {counter} sent to {addr} - Progress: {total_sent / filesize * 100:.2f}%")
-                        counter += 1
+                        total_sent+=len(chunk)
+                        log_message(f"Sent chunnk {counter}to {addr}. Progress:{total_sent/file_size*100:.2f}%")
+                        counter+=1
+
+                        #now lets see what the client responds with, we'll give them 30 seconds max, else we terminate
+                        client_socket.settimeout(30)
+                        try:
+                            response=client_socket.recv(1024).decode().strip().upper()
+                        except socket.timeout:
+                            log_message(f"Timeout:No response from {addr}after chunk {counter}. Aborting this transfer.")
+                            break
+                        #if the cliet replies with a continue it'll send the next chumk
+                        if response=="CONTINUE":
+                            continue
+                        elif response=="PAUSE":
+                            log_message(f"Download paused by{addr}. Waiting up to 30 minutes to resume..")
+
+                            client_socket.settimeout(1800)
+                            try:
+                                resume_signal=client_socket.recv(1024).decode().strip().upper()
+                                if resume_signal="CONTINUE":
+                                    log_message(f"Client{addr} resumed the download")
+                                    continue
+                                elif resume_signal=="STOP":
+                                    log_message(f"Client{addr} stopped the download.")
+                                    break
+                            except socket.timeout:
+                                log_message(f"No resume from {addr} after 30 minutes.Closing the connection.")
+                                break
+
+                        elif response=="STOP":
+                            log_message(f"Client{addr} terminated the download.")
+                            break
+                        else:
+                            log_message(f"Unexpected respons'{response}' from {addr}.Closing connection.")
+                            break
+                
+                
+
+
                 log_message(f"SUCCESS: File {filename} successfully sent to {addr}")
             
             except Exception as e:
