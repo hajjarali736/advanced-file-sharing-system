@@ -34,6 +34,36 @@ def log_message(message):
 
 def handle_client(client_socket, addr):
     try:
+        ''' Ranim: Implementing the access control /login system'''
+        valid_users={
+            "admin": "adminpass",
+            "user":"userpass" #this is a hardcoded user database, we can use a real database later
+        }
+        authenticated=False
+        username=None
+
+
+        login_attempt=client_socket.recv(1024).decode().strip()
+        log_message(f"{addr} sent login attempt: {login_attempt}")
+
+        if not login_attempt.startswith("LOGIN "):
+            client_socket.send("ERROR: you must login first using LOGIN<username><password>".encode())
+            log_message(f"{addr} failed to login:No LOGIN command")
+            client_socket.close()
+            return
+        
+        username,password= parts[1],parts[2]
+
+        if (username in valid_users and valid_users[username]==password):
+            authenticated=True
+            client_socket.send("LOGIN_SUCCESS".encode())
+            log_message(f"{addr} authenticated as {username}")
+        else:
+            client_socket.send("LOGIN_FAILED".encode())
+            log_message(f"{addr} failed login with username {username}")
+            client_socket.close()
+            return
+
         '''
             The client sends 3 kinds of commands:
             1. UPLOAD <filename> <filesize> <checksum> <-o>: server receives file from client (programmed by Michael)
@@ -191,7 +221,7 @@ def handle_client(client_socket, addr):
 
                         client_socket.sendall(chunk)
                         total_sent+=len(chunk)
-                        log_message(f"Sent chunnk {counter}to {addr}. Progress:{total_sent/file_size*100:.2f}%")
+                        log_message(f"Sent chunnk {counter}to {addr}. Progress:{total_sent/filesize*100:.2f}%")
                         counter+=1
 
                         #now lets see what the client responds with, we'll give them 30 seconds max, else we terminate
@@ -210,7 +240,7 @@ def handle_client(client_socket, addr):
                             client_socket.settimeout(1800)
                             try:
                                 resume_signal=client_socket.recv(1024).decode().strip().upper()
-                                if resume_signal="CONTINUE":
+                                if resume_signal=="CONTINUE":
                                     log_message(f"Client{addr} resumed the download")
                                     continue
                                 elif resume_signal=="STOP":

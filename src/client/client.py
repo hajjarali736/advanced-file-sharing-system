@@ -191,6 +191,22 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))#connects to the server
 log_message(f"Connection with {clientSocket.getpeername()} established")
 
+#login logic:
+username=input("Username: ").strip()
+password=input("Password: ").strip()
+clientSocket.send(f"LOGIN{username}{password}".encode())
+
+response=clientSocket.recv(1024).decode()
+if (response)=="LOGIN_SUCCESS":
+    print("Login successful!")
+    log_message("Login successful")
+
+else:
+    print("Login failed.Exiting..")
+    log_message("Login failed")
+    clientSocket.close()
+    exit()
+
 command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | EXIT): ").strip().upper()
 #prompts the user for a command and turns it into uppercase(to make it case-insensitive)
 
