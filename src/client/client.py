@@ -194,12 +194,15 @@ log_message(f"Connection with {clientSocket.getpeername()} established")
 #login logic:
 username=input("Username: ").strip()
 password=input("Password: ").strip()
-clientSocket.send(f"LOGIN{username}{password}".encode())
+clientSocket.send(f"LOGIN {username} {password}".encode())
 
 response=clientSocket.recv(1024).decode()
-if (response)=="LOGIN_SUCCESS":
+if (response.startswith("LOGIN_SUCCESS")):
+    role=response.split()[1]#this is to get the role of the user
     print("Login successful!")
-    log_message("Login successful")
+    log_message(f"Login successful with role: {role}")
+    if role == "admin":
+      print("As an admin, you can also use: DELETE <filename>")#this is only to show the admin his instructions
 
 else:
     print("Login failed.Exiting..")
@@ -207,7 +210,7 @@ else:
     clientSocket.close()
     exit()
 
-command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | EXIT): ").strip().upper()
+command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip().upper()
 #prompts the user for a command and turns it into uppercase(to make it case-insensitive)
 
 if command == "EXIT":
@@ -252,6 +255,18 @@ elif command == "RESUME":
         download_file(state['filename'], clientSocket, resume=True)
     else:
         print("No paused download to resume")
+    
+elif command.startswith("DELETE "):
+    if (role!="admin"):
+        print("ERROR: Only admin users can delete files.")
+        log_message("Unauthorized delete attempt.")
+    else:
+        filename=command.split()[1]
+        clientSocket.send(f"DELETE {filename}".encode())
+        response=clientSocket.recv(1024).decode()
+        print(response)
+        log_message(f"Delete response: {response}")
+
 
 else:
     error_message = "Invalid command. Format:"

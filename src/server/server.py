@@ -36,8 +36,8 @@ def handle_client(client_socket, addr):
     try:
         ''' Ranim: Implementing the access control /login system'''
         valid_users={
-            "admin": "adminpass",
-            "user":"userpass" #this is a hardcoded user database, we can use a real database later
+            "admin": {"password":"adminpass","role":"admin"},
+            "user":{"password": "userpass","role":"user"} 
         }
         authenticated=False
         username=None
@@ -51,13 +51,20 @@ def handle_client(client_socket, addr):
             log_message(f"{addr} failed to login:No LOGIN command")
             client_socket.close()
             return
+        parts = login_attempt.split()
+        if (len(parts)!=3):
+            client_socket.send("ERROR:Invalid login format. Use LOGIN<username><password>".encode())
+            log_message(f"{addr} failed login:Invalid format")
+            client_socket.close()
+            return
         
         username,password= parts[1],parts[2]
 
-        if (username in valid_users and valid_users[username]==password):
+        if (username in valid_users and valid_users[username]["password"]==password):
             authenticated=True
-            client_socket.send("LOGIN_SUCCESS".encode())
-            log_message(f"{addr} authenticated as {username}")
+            role=valid_users[username]["role"]
+            client_socket.send(f"LOGIN_SUCCESS {role}".encode())
+            log_message(f"{addr} authenticated as {username}({role})")
         else:
             client_socket.send("LOGIN_FAILED".encode())
             log_message(f"{addr} failed login with username {username}")
@@ -235,9 +242,9 @@ def handle_client(client_socket, addr):
                         if response=="CONTINUE":
                             continue
                         elif response=="PAUSE":
-                            log_message(f"Download paused by{addr}. Waiting up to 30 minutes to resume..")
+                            log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
 
-                            client_socket.settimeout(1800)
+                            client_socket.settimeout(30)
                             try:
                                 resume_signal=client_socket.recv(1024).decode().strip().upper()
                                 if resume_signal=="CONTINUE":
@@ -247,14 +254,14 @@ def handle_client(client_socket, addr):
                                     log_message(f"Client{addr} stopped the download.")
                                     break
                             except socket.timeout:
-                                log_message(f"No resume from {addr} after 30 minutes.Closing the connection.")
+                                log_message(f"No resume from {addr} after 30 seconds. Closing the connection.")
                                 break
 
                         elif response=="STOP":
                             log_message(f"Client{addr} terminated the download.")
                             break
                         else:
-                            log_message(f"Unexpected respons'{response}' from {addr}.Closing connection.")
+                            log_message(f"Unexpected response '{response}' from {addr}.Closing connection.")
                             break
                 
                 
@@ -279,6 +286,26 @@ def handle_client(client_socket, addr):
                 files += f"{index}. {filename}\n"
             client_socket.send(files.encode('utf-8'))
             log_message(f"File list successfully sent to {addr}")
+        
+        elif parts[0]=="DELETE":
+            if (role!="admin"):
+                client_socket.send("ERROR: Only admin users can delete files".encode())
+                log_message(f"Unauthorized Delete attempt by {username}from{addr}")
+                return 
+            
+            if (len(parts)!=2):
+                client_socket.send("ERROR: DELETE command requires a filename".encode())
+                return 
+            
+            filename=parts[1]
+            file_path=os.path.join("files",filename)
+            if (os.path.exists(file_path)):
+                os.remove(file_path)
+                client_socket.send(f"SUCCESS: Deleted {filename}".encode())
+                log_message(f"Admin {username} deleted file {filename}")
+
+            else:
+                client_socket.send("ERROR: File not found".encode())
 
         elif parts[0] == "EXIT":
             return
