@@ -2,6 +2,7 @@ from socket import *
 import os
 import logging
 from time import sleep
+import hashlib
 
 serverName = '127.0.0.1'
 serverPort = 8926  
@@ -9,6 +10,14 @@ log_file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
 
 # Global variable to track download state
 download_state = None
+
+
+# Function  to hash password before sending it to server
+def hash_password(password):
+    """Client-side password hashing"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
 
 # Function to calculate 16-bit checksum of a file
 def calculate_checksum(filename):

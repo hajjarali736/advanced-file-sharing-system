@@ -3,6 +3,78 @@ import threading
 import os
 import logging
 
+import sqlite3
+import hashlib
+
+
+""" database functions"""
+def connect_db():
+    conn = sqlite3.connect('user_data.db')
+    return conn
+
+# Function to create the user table if it doesn't exist
+def create_table():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS USER (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        username TEXT UNIQUE,
+                        password TEXT,
+                        role TEXT CHECK(role IN ("user", "admin")) NOT NULL)''')
+    conn.commit()
+    conn.close()
+
+
+
+# Function to hash passwords (help by chatgpt)
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+# Function to register a user (username, password, role)
+def register(username, password, role="user"):
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    # Hash the password before storing it
+    hashed_password = hash_password(password)
+    
+    try:
+        cursor.execute('''INSERT INTO USER (username, password, role) 
+                          VALUES (?, ?, ?)''', (username, hashed_password, role))
+        conn.commit()
+        print(f"User {username} registered successfully.")
+        return True
+    except sqlite3.IntegrityError:
+        print("Username already exists.")
+        return False
+    finally:
+        conn.close()
+
+# Function to validate credentials (username, hashed_password)
+def validate_credentials(username, received_hash):
+    """Validate credentials with client-side hashing"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    # Get stored hash from database
+    cursor.execute('''SELECT password FROM USER WHERE username = ?''', (username,))
+    result = cursor.fetchone()
+    
+    conn.close()
+    
+    return result and result[0] == received_hash
+
+def user_exists(username):
+    """Check if a username exists in the database"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''SELECT username FROM USER WHERE username = ?''', (username,))
+    user = cursor.fetchone()
+    
+    conn.close()
+    return user is not None  
+
 # Function to calculate 16-bit checksum of a file
 def calculate_checksum(filename):
     checksum = 0
@@ -338,8 +410,11 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(("localhost", 8926))
 server_socket.listen(5)
 
-print("Server is listening for incoming connections...")
 
+# register("admin","adminpass",role="admin")
+
+print("Server is listening for incoming connections...")
+create_table()
 while True:
     client_socket, addr = server_socket.accept()
     print(f"New connection from {addr}")
