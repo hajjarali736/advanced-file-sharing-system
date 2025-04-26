@@ -6,3 +6,13 @@
 2025-04-16 17:56:37,840 - File size received: 11 bytes, expected checksum: 1101
 2025-04-16 17:56:37,840 - Downloaded TEST.TXT successfully (checksum verified)
 2025-04-16 17:56:37,840 - Connection closed
+2025-04-26 08:37:13,540 - Login successful with role: admin
+2025-04-26 08:41:38,768 - Login successful with role: admin
+2025-04-26 08:43:39,150 - Login successful with role: admin
+2025-04-26 08:45:04,368 - Login successful with role: admin
+2025-04-26 08:46:06,905 - Login successful with role: admin
+2025-04-26 08:47:55,446 - Login failed
+2025-04-26 08:47:58,816 - Login failed
+2025-04-26 08:48:03,526 - Login successful with role: admin
+2025-04-26 08:51:18,923 - Login successful with role: admin
+2025-04-26 08:53:23,521 - Login successful with role: admin

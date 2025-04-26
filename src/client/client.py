@@ -187,92 +187,121 @@ def download_file(filename, clientSocket, resume=False):
         print(error_message)
         log_message(error_message)
 
-clientSocket = socket(AF_INET, SOCK_STREAM)
-clientSocket.connect((serverName, serverPort))#connects to the server
-log_message(f"Connection with {clientSocket.getpeername()} established")
+def connect_to_server():
+    client_socket = socket(AF_INET, SOCK_STREAM)
+    client_socket.connect((serverName, serverPort))
+    return client_socket
 
-#login logic:
-username=input("Username: ").strip()
-password=input("Password: ").strip()
-clientSocket.send(f"LOGIN {username} {password}".encode())
 
-response=clientSocket.recv(1024).decode()
-if (response.startswith("LOGIN_SUCCESS")):
-    role=response.split()[1]#this is to get the role of the user
-    print("Login successful!")
-    log_message(f"Login successful with role: {role}")
-    if role == "admin":
-      print("As an admin, you can also use: DELETE <filename>")#this is only to show the admin his instructions
+def login(username, password, client_socket):
+    try:
+        client_socket.send(f"LOGIN {username} {password}".encode())
+        response = client_socket.recv(1024).decode()
 
-else:
-    print("Login failed.Exiting..")
-    log_message("Login failed")
+        if response.startswith("LOGIN_SUCCESS"):
+            role = response.split()[1]
+            log_message(f"Login successful with role: {role}")
+            return True, role
+        else:
+            log_message("Login failed")
+            return False, None
+
+    except Exception as e:
+        log_message(f"Login error: {str(e)}")
+        return False, None
+
+
+def main():
+    clientSocket = socket(AF_INET, SOCK_STREAM)
+    clientSocket.connect((serverName, serverPort))#connects to the server
+    log_message(f"Connection with {clientSocket.getpeername()} established")
+
+    #login logic:
+    username=input("Username: ").strip()
+    password=input("Password: ").strip()
+    clientSocket.send(f"LOGIN {username} {password}".encode())
+
+    response=clientSocket.recv(1024).decode()
+    if (response.startswith("LOGIN_SUCCESS")):
+        role=response.split()[1]#this is to get the role of the user
+        print("Login successful!")
+        log_message(f"Login successful with role: {role}")
+        if role == "admin":
+            print("As an admin, you can also use: DELETE <filename>")#this is only to show the admin his instructions
+
+    else:
+        print("Login failed.Exiting..")
+        log_message("Login failed")
+        clientSocket.close()
+        exit()
+
+    command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip().upper()
+    #prompts the user for a command and turns it into uppercase(to make it case-insensitive)
+
+    if command == "EXIT":
+        clientSocket.send(b"EXIT")
+        log_message("Sent EXIT command")
+        clientSocket.close() #closes the socket (it terminates the client)
+        log_message("Connection closed")
+        
+
+    elif command == "LIST":
+        clientSocket.send(b"LIST")
+        log_message("Sent LIST command")
+        print("Available files:")
+        files_list = clientSocket.recv(4096).decode() #asks the server for list of files, it then receives and prints it
+        print(files_list)
+        log_message("Received file list")
+
+    elif command.startswith("UPLOAD "):
+        filename = command.split()[1]
+        overwrite = False
+        if len(command.split()) == 3 and command.split()[2] == "-o":
+            overwrite = True
+        upload_file(filename, clientSocket, overwrite) #extracts file name ftom the command and calls the upload function
+
+    elif command.startswith("DOWNLOAD "):
+        filename = command.split()[1]
+        download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
+
+    elif command == "PAUSE":
+        state = load_download_state()
+        if state:
+            print(f"Download paused: {state['filename']} at {state['offset']}/{state['total_size']} bytes")
+            clientSocket.send(b"PAUSE")
+            log_message("Sent PAUSE command")
+        else:
+            print("No active download to pause")
+
+    elif command == "RESUME":
+        state = load_download_state()
+        if state:
+            print(f"Resuming download: {state['filename']} from {state['offset']}/{state['total_size']} bytes")
+            download_file(state['filename'], clientSocket, resume=True)
+        else:
+            print("No paused download to resume")
+        
+    elif command.startswith("DELETE "):
+        if (role!="admin"):
+            print("ERROR: Only admin users can delete files.")
+            log_message("Unauthorized delete attempt.")
+        else:
+            filename=command.split()[1]
+            clientSocket.send(f"DELETE {filename}".encode())
+            response=clientSocket.recv(1024).decode()
+            print(response)
+            log_message(f"Delete response: {response}")
+
+
+    else:
+        error_message = "Invalid command. Format:"
+        print(error_message)
+        print("LIST | UPLOAD filename | DOWNLOAD filename | PAUSE | RESUME | EXIT") #prints usage info if the command doesn't match any supported format
+        log_message(error_message)
+
     clientSocket.close()
-    exit()
-
-command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip().upper()
-#prompts the user for a command and turns it into uppercase(to make it case-insensitive)
-
-if command == "EXIT":
-    clientSocket.send(b"EXIT")
-    log_message("Sent EXIT command")
-    clientSocket.close() #closes the socket (it terminates the client)
     log_message("Connection closed")
-    
-
-elif command == "LIST":
-    clientSocket.send(b"LIST")
-    log_message("Sent LIST command")
-    print("Available files:")
-    files_list = clientSocket.recv(4096).decode() #asks the server for list of files, it then receives and prints it
-    print(files_list)
-    log_message("Received file list")
-
-elif command.startswith("UPLOAD "):
-    filename = command.split()[1]
-    overwrite = False
-    if len(command.split()) == 3 and command.split()[2] == "-o":
-        overwrite = True
-    upload_file(filename, clientSocket, overwrite) #extracts file name ftom the command and calls the upload function
-
-elif command.startswith("DOWNLOAD "):
-    filename = command.split()[1]
-    download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
-
-elif command == "PAUSE":
-    state = load_download_state()
-    if state:
-        print(f"Download paused: {state['filename']} at {state['offset']}/{state['total_size']} bytes")
-        clientSocket.send(b"PAUSE")
-        log_message("Sent PAUSE command")
-    else:
-        print("No active download to pause")
-
-elif command == "RESUME":
-    state = load_download_state()
-    if state:
-        print(f"Resuming download: {state['filename']} from {state['offset']}/{state['total_size']} bytes")
-        download_file(state['filename'], clientSocket, resume=True)
-    else:
-        print("No paused download to resume")
-    
-elif command.startswith("DELETE "):
-    if (role!="admin"):
-        print("ERROR: Only admin users can delete files.")
-        log_message("Unauthorized delete attempt.")
-    else:
-        filename=command.split()[1]
-        clientSocket.send(f"DELETE {filename}".encode())
-        response=clientSocket.recv(1024).decode()
-        print(response)
-        log_message(f"Delete response: {response}")
 
 
-else:
-    error_message = "Invalid command. Format:"
-    print(error_message)
-    print("LIST | UPLOAD filename | DOWNLOAD filename | PAUSE | RESUME | EXIT") #prints usage info if the command doesn't match any supported format
-    log_message(error_message)
-
-clientSocket.close()
-log_message("Connection closed")
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+import tkinter as tk
+
 import tkinter.filedialog as fd
 import threading
 import socket
@@ -42,8 +44,9 @@ class MainClientPage(ttk.Window):
         self.logout_btn.grid(row=0, column=5, padx=10)
 
         # Server Files List
-        self.files_listbox = ttk.Listbox(self, width=80, height=20, bootstyle="info")
+        self.files_listbox = tk.Listbox(self, width=80, height=20)
         self.files_listbox.pack(pady=20)
+
 
         # Download Progress Bar
         self.progress = ttk.Progressbar(self, bootstyle="success-striped", length=700, mode="determinate")
@@ -57,12 +60,32 @@ class MainClientPage(ttk.Window):
         try:
             self.client_socket.sendall(b"LIST")
             files = self.client_socket.recv(4096).decode()
-            self.files_listbox.delete(0, END)
+
+            self.files_listbox.delete(0, tk.END)
+
+            if not files.strip():
+                if hasattr(self, 'status_label'):
+                    self.status_label.config(text="No files found on server.")
+                print("Server responded: No files found.")
+                return
+
+            print("Files on server:")
             for file in files.strip().split("\n"):
-                self.files_listbox.insert(END, file)
-            self.status_label.config(text="File list updated.")
+                self.files_listbox.insert(tk.END, file.strip())
+                print(file.strip())
+
+            if hasattr(self, 'status_label'):
+                self.status_label.config(text="File list updated.")
+
         except Exception as e:
-            self.status_label.config(text=f"Error fetching files: {str(e)}")
+            print(f"Error fetching files: {str(e)}")
+            if hasattr(self, 'status_label'):
+                try:
+                    self.status_label.config(text=f"Error fetching files: {str(e)}")
+                except Exception:
+                    pass  # Ignore if window is already closed
+
+
 
     def upload_file(self):
         filepath = fd.askopenfilename()
@@ -99,30 +122,31 @@ class MainClientPage(ttk.Window):
             messagebox.showwarning("No file selected", "Please select a file to download.")
             return
 
-        filename = self.files_listbox.get(selection[0]).split(". ", 1)[-1]
+        filename = self.files_listbox.get(selection[0])  # FIX: no split
 
         try:
             self.client_socket.sendall(f"DOWNLOAD {filename}".encode())
             response = self.client_socket.recv(1024).decode()
 
-            if response.startswith("filesize"):
-                parts = response.split()
-                filesize = int(parts[1])
-                checksum = int(parts[2])
+            if not response.startswith("filesize"):  # ADD: error handling
+                self.status_label.config(text=f"Server error: {response}")
+                return
 
-                self.client_socket.sendall(b"START")
+            parts = response.split()
+            filesize = int(parts[1])
+            checksum = int(parts[2])
 
-                save_path = os.path.join(os.getcwd(), filename)
+            self.client_socket.sendall(b"START")
 
-                self.downloading = True
-                self.pause_btn.config(state=NORMAL)
-                self.resume_btn.config(state=DISABLED)
-                threading.Thread(target=self.receive_file, args=(save_path, filesize, checksum)).start()
-            else:
-                self.status_label.config(text=response)
+            save_path = os.path.join(os.getcwd(), filename)
 
+            self.downloading = True
+            self.pause_btn.config(state=NORMAL)
+            self.resume_btn.config(state=DISABLED)
+            threading.Thread(target=self.receive_file, args=(save_path, filesize, checksum)).start()
         except Exception as e:
             self.status_label.config(text=f"Download failed: {str(e)}")
+
 
     def receive_file(self, save_path, filesize, expected_checksum):
         received = 0

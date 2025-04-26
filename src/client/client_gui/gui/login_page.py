@@ -1,14 +1,32 @@
+import sys
+import os
+
+# Fix sys.path
+current_dir = os.path.dirname(__file__)
+client_dir = os.path.abspath(os.path.join(current_dir, '..', '..', '..'))
+sys.path.insert(0, client_dir)
+
+import client
+print(client.__file__)
+
+print("Imported client module from:", client.__file__)
+
+
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import tkinter.messagebox as messagebox
+import client  # importing your real client.py (modularized!)
 from main_client_page import MainClientPage
+
+
+
 
 class LoginRegisterPage(ttk.Window):
     def __init__(self):
         super().__init__(themename="cyborg")
         self.title("File Sharing Client - Login/Register")
         self.geometry("600x650")
-
         self.resizable(False, False)
 
         self.active_tab = "Login"
@@ -34,7 +52,7 @@ class LoginRegisterPage(ttk.Window):
 
         # Form
         self.form_frame = ttk.Frame(self)
-        self.form_frame.pack(pady=10)
+        self.form_frame.pack(pady=30)
 
         # Username
         self.username_label = ttk.Label(self.form_frame, text="Username", font=("Poppins", 14))
@@ -48,12 +66,11 @@ class LoginRegisterPage(ttk.Window):
         self.password_entry = ttk.Entry(self.form_frame, show="*", font=("Poppins", 14), width=30)
         self.password_entry.grid(row=3, column=0, pady=5)
 
-        # Submit Button (Login/Register)
+        # Submit Button
         self.submit_btn = ttk.Button(self, text="Login", bootstyle="success", width=20, command=self.submit_action)
-        self.submit_btn.pack(pady=5)
+        self.submit_btn.pack(pady=20)
 
-
-        # Status    
+        # Status
         self.status_label = ttk.Label(self, text="", font=("Poppins", 12), bootstyle="danger")
         self.status_label.pack()
 
@@ -67,7 +84,7 @@ class LoginRegisterPage(ttk.Window):
         else:
             self.register_btn.configure(bootstyle="info-outline")
             self.login_btn.configure(bootstyle="secondary-outline")
-            self.submit_btn.configure(text="Register", bootstyle="primary")
+            self.submit_btn.configure(text="Register")
             self.status_label.config(text="")
 
     def submit_action(self):
@@ -78,15 +95,28 @@ class LoginRegisterPage(ttk.Window):
             self.status_label.config(text="Please enter both username and password.")
             return
 
-        # ----- FAKE LOCAL LOGIN -----
-        if username == "admin" and password == "adminpass":
-            messagebox.showinfo("Login Success", "Welcome!")
-            self.destroy()
-            # Pass dummy None instead of real socket
-            main_page = MainClientPage(None)
-            main_page.mainloop()
-        else:
-            self.status_label.config(text="Invalid username or password.")
+        try:
+            # Clean way: use client.py functions
+            client_socket = client.connect_to_server()
+
+
+            success, role = client.login(username, password, client_socket)
+
+            if success:
+                messagebox.showinfo("Login Success", f"Welcome, {username}!")
+                self.destroy()
+                main_page = MainClientPage(client_socket)
+                main_page.mainloop()
+            else:
+                self.status_label.config(text="Login failed. Please check credentials.")
+                client_socket.close()
+
+        except Exception as e:
+            try:
+                self.status_label.config(text=f"Connection error: {str(e)}")
+            except Exception:
+                pass  # Window probably closed, ignore
+
 
 if __name__ == "__main__":
     app = LoginRegisterPage()
