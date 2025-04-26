@@ -126,21 +126,22 @@ def handle_client(client_socket, addr):
                 # receive chunks of 1024 bytes at a time, keep track of received amount
                 received_size = 0
                 # save file into "files" directory
-                file_path = os.path.join("files", filename)
+                # Ensure the file is saved in the correct directory relative to server.py
+                file_path = os.path.join(files_path, filename)
 
                 try:
                     with open(file_path, "wb") as f:
-                        # loop until the full file size is received
+                        # Loop until the full file size is received
                         while received_size < file_size:
                             chunk_size = min(1024, file_size - received_size)
-                            chunk = client_socket.recv(chunk_size) # only send necessary amount
-                            if not chunk:  # connection lost
-                                raise ConnectionError("File transfer interrupted")  
-                            # if chunk is complete, write it to file
+                            chunk = client_socket.recv(chunk_size)  # Only receive the necessary amount
+                            if not chunk:  # Connection lost
+                                raise ConnectionError("File transfer interrupted")
+                            # Write the received chunk to the file
                             f.write(chunk)
-                            received_size += len(chunk) # dynamically update receieved amount
+                            received_size += len(chunk)  # Dynamically update the received amount
 
-                    # Verify checksum after receiving file
+                    # Verify checksum after receiving the file
                     actual_checksum = calculate_checksum(file_path)
                     if actual_checksum == expected_checksum:
                         client_socket.send(f"SUCCESS: File received as {filename} (checksum verified)".encode('utf-8'))
@@ -149,9 +150,9 @@ def handle_client(client_socket, addr):
                         raise ConnectionError("File checksum verification failed")
 
                 except Exception as e:
-                    if os.path.exists(file_path):  # delete incomplete/corrupted file
+                    if os.path.exists(file_path):  # Delete incomplete/corrupted file
                         os.remove(file_path)
-                    client_socket.send(f"ERROR: {str(e)}".encode('utf-8')) # send the error to client
+                    client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))  # Send the error to the client
                     log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
 
             elif parts[0] == "DOWNLOAD":
@@ -167,10 +168,15 @@ def handle_client(client_socket, addr):
                     offset = int(parts[2]) if len(parts) == 3 else 0 # get offset if provided
                     file_path = os.path.join("files", filename)
 
-                    if not os.path.exists(file_path):
+                    #if not os.path.exists(file_path):
+                    # Perform case-insensitive file matching
+                    matched_file = next((f for f in file_list if f.lower() == filename.lower()), None)
+                    if not matched_file:
                         client_socket.send("ERROR: File not found".encode('utf-8'))
                         log_message(f"ERROR: {addr} requested non-existent file {filename}")
                         return
+
+                    file_path = os.path.join(files_path, matched_file)
 
                     filesize = os.path.getsize(file_path)
                     if offset >= filesize:

@@ -38,10 +38,12 @@ def log_message(message):
 
 def upload_file(filename, clientSocket, overwrite):
     try:
-        filesize = os.path.getsize(filename) # automates file size by getting size and inform the server
+        # Ensure the file path is relative to the directory of client.py
+        file_path = os.path.join(os.path.dirname(__file__), filename)
+        filesize = os.path.getsize(file_path) # automates file size by getting size and inform the server
                                         #how much data it should expect(bytes).
         # Calculate checksum before sending
-        checksum = calculate_checksum(filename)
+        checksum = calculate_checksum(file_path)
         if checksum is None:
             error_message = "Failed to calculate checksum"
             print(error_message)
@@ -54,7 +56,7 @@ def upload_file(filename, clientSocket, overwrite):
         else:
             clientSocket.send(f"UPLOAD {filename} {filesize} {checksum}".encode())
         
-        with open(filename, "rb") as f:
+        with open(file_path, "rb") as f:
             while True:
                 chunk = f.read(1024)
                 if not chunk:
@@ -292,7 +294,7 @@ def main():
             print("LIST | UPLOAD filename | DOWNLOAD filename | PAUSE | RESUME | EXIT") #prints usage info if the command doesn't match any supported format
             log_message(error_message)
 
-        command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip().upper()
+        command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip()
 
     if command == "EXIT":
         clientSocket.send(b"EXIT")
