@@ -92,227 +92,234 @@ def handle_client(client_socket, addr):
         files_path = os.path.join(base_path, "files")    # path to server/files
         file_list = os.listdir(files_path)
 
-        if parts[0] == "UPLOAD":
-            # remark: <-o> is an optional flag which means "overwrite"
-            # ensure command formatted correctly
-            if len(parts) < 4 or (len(parts) == 5 and parts[4] != "-o") or len(parts) > 5:
-                client_socket.send("ERROR: Invalid arguments for the UPLOAD command".encode('utf-8'))
-                log_message(f"ERROR: {addr} sent an invalid UPLOAD command")
-                return
-
-            filename = parts[1] # get <filename>
-            try:
-                file_size = int(parts[2]) # get <filesize> and convert to int
-                expected_checksum = int(parts[3]) # get <checksum>
-            except ValueError: # handle invalid <filesize> or <checksum>
-                client_socket.send("ERROR: Invalid <filesize> or <checksum> argument".encode('utf-8'))
-                log_message(f"ERROR: {addr} sent invalid <filesize> or <checksum>")
-                return
-
-            # if overwrite flag is not specified, avoid overwriting
-            if (len(parts) == 4):
-            # check if filename already exists in our list of files
-                if filename in file_list:
-                    name, ext = os.path.splitext(filename)  # split filename and extension
-                    counter = 1
-                    while True:
-                        new_name = f"{name}({counter}){ext}"  # append counter before extension
-                        if new_name not in file_list: # change filename to new_name to avoid overwriting
-                            filename = new_name
-                            break
-                        counter += 1
-
-            # receive chunks of 1024 bytes at a time, keep track of received amount
-            received_size = 0
-            # save file into "files" directory
-            file_path = os.path.join("files", filename)
-
-            try:
-                with open(file_path, "wb") as f:
-                    # loop until the full file size is received
-                    while received_size < file_size:
-                        chunk_size = min(1024, file_size - received_size)
-                        chunk = client_socket.recv(chunk_size) # only send necessary amount
-                        if not chunk:  # connection lost
-                            raise ConnectionError("File transfer interrupted")  
-                        # if chunk is complete, write it to file
-                        f.write(chunk)
-                        received_size += len(chunk) # dynamically update receieved amount
-
-                # Verify checksum after receiving file
-                actual_checksum = calculate_checksum(file_path)
-                if actual_checksum == expected_checksum:
-                    client_socket.send(f"SUCCESS: File received as {filename} (checksum verified)".encode('utf-8'))
-                    log_message(f"SUCCESS: File received as {filename} from {addr} (checksum verified)")
-                else:
-                    raise ConnectionError("File checksum verification failed")
-
-            except Exception as e:
-                if os.path.exists(file_path):  # delete incomplete/corrupted file
-                    os.remove(file_path)
-                client_socket.send(f"ERROR: {str(e)}".encode('utf-8')) # send the error to client
-                log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
-
-        elif parts[0] == "DOWNLOAD":
-            '''ali's code'''
-            try:
+        while len(parts) > 0 and parts[0] != "EXIT":
+            if parts[0] == "UPLOAD":
+                # remark: <-o> is an optional flag which means "overwrite"
                 # ensure command formatted correctly
-                if len(parts) < 2 or len(parts) > 3:
-                    client_socket.send("ERROR: Invalid arguments for the DOWNLOAD command".encode('utf-8'))
-                    log_message(f"ERROR: {addr} sent an invalid <filename> argument")
+                if len(parts) < 4 or (len(parts) == 5 and parts[4] != "-o") or len(parts) > 5:
+                    client_socket.send("ERROR: Invalid arguments for the UPLOAD command".encode('utf-8'))
+                    log_message(f"ERROR: {addr} sent an invalid UPLOAD command")
                     return
 
                 filename = parts[1] # get <filename>
-                offset = int(parts[2]) if len(parts) == 3 else 0 # get offset if provided
+                try:
+                    file_size = int(parts[2]) # get <filesize> and convert to int
+                    expected_checksum = int(parts[3]) # get <checksum>
+                except ValueError: # handle invalid <filesize> or <checksum>
+                    client_socket.send("ERROR: Invalid <filesize> or <checksum> argument".encode('utf-8'))
+                    log_message(f"ERROR: {addr} sent invalid <filesize> or <checksum>")
+                    return
+
+                # if overwrite flag is not specified, avoid overwriting
+                if (len(parts) == 4):
+                # check if filename already exists in our list of files
+                    if filename in file_list:
+                        name, ext = os.path.splitext(filename)  # split filename and extension
+                        counter = 1
+                        while True:
+                            new_name = f"{name}({counter}){ext}"  # append counter before extension
+                            if new_name not in file_list: # change filename to new_name to avoid overwriting
+                                filename = new_name
+                                break
+                            counter += 1
+
+                # receive chunks of 1024 bytes at a time, keep track of received amount
+                received_size = 0
+                # save file into "files" directory
                 file_path = os.path.join("files", filename)
 
-                if not os.path.exists(file_path):
-                    client_socket.send("ERROR: File not found".encode('utf-8'))
-                    log_message(f"ERROR: {addr} requested non-existent file {filename}")
-                    return
-
-                filesize = os.path.getsize(file_path)
-                if offset >= filesize:
-                    client_socket.send("ERROR: Invalid offset".encode('utf-8'))
-                    log_message(f"ERROR: {addr} sent invalid offset {offset}")
-                    return
-
-                checksum = calculate_checksum(file_path)
-                if checksum is None:
-                    client_socket.send("ERROR: Failed to calculate file checksum".encode('utf-8'))
-                    log_message(f"ERROR: Failed to calculate checksum for {filename}")
-                    return
-
-                client_socket.send(f"filesize {filesize} {checksum}".encode('utf-8'))
-                log_message(f"File size: {filesize} and checksum: {checksum} sent to {addr}")
-
-                client_socket.settimeout(3)
                 try:
-                    start_signal = client_socket.recv(1024).decode('utf-8')
-                    if start_signal != "START":
-                        client_socket.send("ERROR: Invalid start signal".encode('utf-8'))
-                        log_message(f"ERROR: {addr} sent an invalid start signal")
+                    with open(file_path, "wb") as f:
+                        # loop until the full file size is received
+                        while received_size < file_size:
+                            chunk_size = min(1024, file_size - received_size)
+                            chunk = client_socket.recv(chunk_size) # only send necessary amount
+                            if not chunk:  # connection lost
+                                raise ConnectionError("File transfer interrupted")  
+                            # if chunk is complete, write it to file
+                            f.write(chunk)
+                            received_size += len(chunk) # dynamically update receieved amount
+
+                    # Verify checksum after receiving file
+                    actual_checksum = calculate_checksum(file_path)
+                    if actual_checksum == expected_checksum:
+                        client_socket.send(f"SUCCESS: File received as {filename} (checksum verified)".encode('utf-8'))
+                        log_message(f"SUCCESS: File received as {filename} from {addr} (checksum verified)")
+                    else:
+                        raise ConnectionError("File checksum verification failed")
+
+                except Exception as e:
+                    if os.path.exists(file_path):  # delete incomplete/corrupted file
+                        os.remove(file_path)
+                    client_socket.send(f"ERROR: {str(e)}".encode('utf-8')) # send the error to client
+                    log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
+
+            elif parts[0] == "DOWNLOAD":
+                '''ali's code'''
+                try:
+                    # ensure command formatted correctly
+                    if len(parts) < 2 or len(parts) > 3:
+                        client_socket.send("ERROR: Invalid arguments for the DOWNLOAD command".encode('utf-8'))
+                        log_message(f"ERROR: {addr} sent an invalid <filename> argument")
                         return
-                except socket.timeout:
-                    client_socket.send("ERROR: Timeout waiting for start signal".encode('utf-8'))
-                    log_message(f"ERROR: {addr} timed out waiting for start signal")
-                    return
 
-                log_message(f"Client {addr} is ready. Starting file transfer from offset {offset}.")
+                    filename = parts[1] # get <filename>
+                    offset = int(parts[2]) if len(parts) == 3 else 0 # get offset if provided
+                    file_path = os.path.join("files", filename)
 
-                counter = 0
-                total_sent = offset
-                # with open(file_path, "rb") as f:
-                #     f.seek(offset)  # seek to the requested offset
-                #     # send file in chunks of 1024 bytes
-                #     while True:
-                #         chunk = f.read(1024)
-                #         if not chunk:
-                #             break
-                #         #ensures that the full chunk is sent over the socket
-                #         client_socket.sendall(chunk)
-                #         total_sent += len(chunk)
-                #         log_message(f"File chunk {counter} sent to {addr} - Progress: {total_sent / filesize * 100:.2f}%")
-                #         counter += 1
-                #Ranim: I removed this part so that i can implement the download control mechanism
-                 #Ranim's code
-                with open(file_path,"rb") as f:
-                    f.seek(offset)
-                    total_sent=offset
-                    counter=0
+                    if not os.path.exists(file_path):
+                        client_socket.send("ERROR: File not found".encode('utf-8'))
+                        log_message(f"ERROR: {addr} requested non-existent file {filename}")
+                        return
 
-                    while total_sent<filesize:
-                        chunk=f.read(1024)
-                        if not chunk:
-                            break
+                    filesize = os.path.getsize(file_path)
+                    if offset >= filesize:
+                        client_socket.send("ERROR: Invalid offset".encode('utf-8'))
+                        log_message(f"ERROR: {addr} sent invalid offset {offset}")
+                        return
 
-                        client_socket.sendall(chunk)
-                        total_sent+=len(chunk)
-                        log_message(f"Sent chunnk {counter}to {addr}. Progress:{total_sent/filesize*100:.2f}%")
-                        counter+=1
+                    checksum = calculate_checksum(file_path)
+                    if checksum is None:
+                        client_socket.send("ERROR: Failed to calculate file checksum".encode('utf-8'))
+                        log_message(f"ERROR: Failed to calculate checksum for {filename}")
+                        return
 
-                        #now lets see what the client responds with, we'll give them 30 seconds max, else we terminate
-                        client_socket.settimeout(30)
-                        try:
-                            response=client_socket.recv(1024).decode().strip().upper()
-                        except socket.timeout:
-                            log_message(f"Timeout:No response from {addr}after chunk {counter}. Aborting this transfer.")
-                            break
-                        #if the cliet replies with a continue it'll send the next chumk
-                        if response=="CONTINUE":
-                            continue
-                        elif response=="PAUSE":
-                            log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
+                    client_socket.send(f"filesize {filesize} {checksum}".encode('utf-8'))
+                    log_message(f"File size: {filesize} and checksum: {checksum} sent to {addr}")
 
-                            client_socket.settimeout(30)
-                            try:
-                                resume_signal=client_socket.recv(1024).decode().strip().upper()
-                                if resume_signal=="CONTINUE":
-                                    log_message(f"Client{addr} resumed the download")
-                                    continue
-                                elif resume_signal=="STOP":
-                                    log_message(f"Client{addr} stopped the download.")
-                                    break
-                            except socket.timeout:
-                                log_message(f"No resume from {addr} after 30 seconds. Closing the connection.")
+                    client_socket.settimeout(3)
+                    try:
+                        start_signal = client_socket.recv(1024).decode('utf-8')
+                        if start_signal != "START":
+                            client_socket.send("ERROR: Invalid start signal".encode('utf-8'))
+                            log_message(f"ERROR: {addr} sent an invalid start signal")
+                            return
+                    except socket.timeout:
+                        client_socket.send("ERROR: Timeout waiting for start signal".encode('utf-8'))
+                        log_message(f"ERROR: {addr} timed out waiting for start signal")
+                        return
+
+                    log_message(f"Client {addr} is ready. Starting file transfer from offset {offset}.")
+
+                    counter = 0
+                    total_sent = offset
+                    # with open(file_path, "rb") as f:
+                    #     f.seek(offset)  # seek to the requested offset
+                    #     # send file in chunks of 1024 bytes
+                    #     while True:
+                    #         chunk = f.read(1024)
+                    #         if not chunk:
+                    #             break
+                    #         #ensures that the full chunk is sent over the socket
+                    #         client_socket.sendall(chunk)
+                    #         total_sent += len(chunk)
+                    #         log_message(f"File chunk {counter} sent to {addr} - Progress: {total_sent / filesize * 100:.2f}%")
+                    #         counter += 1
+                    #Ranim: I removed this part so that i can implement the download control mechanism
+                    #Ranim's code
+                    with open(file_path,"rb") as f:
+                        f.seek(offset)
+                        total_sent=offset
+                        counter=0
+
+                        while total_sent<filesize:
+                            chunk=f.read(1024)
+                            if not chunk:
                                 break
 
-                        elif response=="STOP":
-                            log_message(f"Client{addr} terminated the download.")
-                            break
-                        else:
-                            log_message(f"Unexpected response '{response}' from {addr}.Closing connection.")
-                            break
+                            client_socket.sendall(chunk)
+                            total_sent+=len(chunk)
+                            log_message(f"Sent chunk {counter} to {addr}. Progress: {total_sent/filesize*100:.2f}%")
+                            counter+=1
+
+                            #now lets see what the client responds with, we'll give them 30 seconds max, else we terminate
+                            client_socket.settimeout(30)
+                            try:
+                                response = client_socket.recv(1024).decode().strip().upper()
+                            except socket.timeout:
+                                log_message(f"Timeout:No response from {addr}after chunk {counter}. Aborting this transfer.")
+                                break
+                            #if the cliet replies with a continue it'll send the next chumk
+                            if response=="CONTINUE":
+                                continue
+                            elif response=="PAUSE":
+                                log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
+
+                                client_socket.settimeout(30)
+                                try:
+                                    resume_signal=client_socket.recv(1024).decode().strip().upper()
+                                    if resume_signal=="CONTINUE":
+                                        log_message(f"Client{addr} resumed the download")
+                                        continue
+                                    elif resume_signal=="STOP":
+                                        log_message(f"Client{addr} stopped the download.")
+                                        break
+                                except socket.timeout:
+                                    log_message(f"No resume from {addr} after 30 seconds. Closing the connection.")
+                                    break
+
+                            elif response=="STOP":
+                                log_message(f"Client{addr} terminated the download.")
+                                break
+                            else:
+                                log_message(f"Unexpected response '{response}' from {addr}.Closing connection.")
+                                break
+                    
+                    
+
+
+                    log_message(f"SUCCESS: File {filename} successfully sent to {addr}")
                 
+                except Exception as e:
+                    client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
+                    log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
+
+            elif parts[0] == "PAUSE":
+                log_message(f"Client {addr} requested pause")
+                client_socket.send("PAUSE_ACK".encode('utf-8'))
+                return
+
+            elif parts[0] == "LIST":
+                # send the client a list of files
+                files = ""
+                # format the list of files by numbering it
+                for index, filename in enumerate(file_list, start=1):
+                    files += f"{index}. {filename}\n"
+                client_socket.send(files.encode('utf-8'))
+                log_message(f"File list successfully sent to {addr}")
+            
+            elif parts[0]=="DELETE":
+                if (role!="admin"):
+                    client_socket.send("ERROR: Only admin users can delete files".encode())
+                    log_message(f"Unauthorized Delete attempt by {username}from{addr}")
+                    return 
                 
+                if (len(parts)!=2):
+                    client_socket.send("ERROR: DELETE command requires a filename".encode())
+                    return 
+                
+                filename=parts[1]
+                file_path=os.path.join("files",filename)
+                if (os.path.exists(file_path)):
+                    os.remove(file_path)
+                    client_socket.send(f"SUCCESS: Deleted {filename}".encode())
+                    log_message(f"Admin {username} deleted file {filename}")
 
+                else:
+                    client_socket.send("ERROR: File not found".encode())
 
-                log_message(f"SUCCESS: File {filename} successfully sent to {addr}")
-            
-            except Exception as e:
-                client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
-                log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
-
-        elif parts[0] == "PAUSE":
-            log_message(f"Client {addr} requested pause")
-            client_socket.send("PAUSE_ACK".encode('utf-8'))
-            return
-
-        elif parts[0] == "LIST":
-            # send the client a list of files
-            files = ""
-            # format the list of files by numbering it
-            for index, filename in enumerate(file_list, start=1):
-                files += f"{index}. {filename}\n"
-            client_socket.send(files.encode('utf-8'))
-            log_message(f"File list successfully sent to {addr}")
-        
-        elif parts[0]=="DELETE":
-            if (role!="admin"):
-                client_socket.send("ERROR: Only admin users can delete files".encode())
-                log_message(f"Unauthorized Delete attempt by {username}from{addr}")
-                return 
-            
-            if (len(parts)!=2):
-                client_socket.send("ERROR: DELETE command requires a filename".encode())
-                return 
-            
-            filename=parts[1]
-            file_path=os.path.join("files",filename)
-            if (os.path.exists(file_path)):
-                os.remove(file_path)
-                client_socket.send(f"SUCCESS: Deleted {filename}".encode())
-                log_message(f"Admin {username} deleted file {filename}")
+            elif parts[0] == "EXIT":
+                return
 
             else:
-                client_socket.send("ERROR: File not found".encode())
+                client_socket.send("ERROR: Command not recognized by server".encode('utf-8'))
+                log_message(f"ERROR: {addr} sent unrecognized command")
 
-        elif parts[0] == "EXIT":
-            return
+            command = client_socket.recv(1024).decode('utf-8')
+            parts = command.split()
 
-        else:
-            client_socket.send("ERROR: Command not recognized by server".encode('utf-8'))
-            log_message(f"ERROR: {addr} sent unrecognized command")
+            # log the command
+            log_message(f"{addr} issued the command {command}")
 
     finally:
         # in all cases (even in case of sudden socket closure), close the client socket

@@ -1,18 +1,17 @@
-2025-04-16 17:55:53,068 - Connection with ('127.0.0.1', 8926) established
-2025-04-16 17:56:14,614 - Invalid command. Format:
-2025-04-16 17:56:14,614 - Connection closed
-2025-04-16 17:56:30,183 - Connection with ('127.0.0.1', 8926) established
-2025-04-16 17:56:37,840 - Requesting download for TEST.TXT
-2025-04-16 17:56:37,840 - File size received: 11 bytes, expected checksum: 1101
-2025-04-16 17:56:37,840 - Downloaded TEST.TXT successfully (checksum verified)
-2025-04-16 17:56:37,840 - Connection closed
-2025-04-26 08:37:13,540 - Login successful with role: admin
-2025-04-26 08:41:38,768 - Login successful with role: admin
-2025-04-26 08:43:39,150 - Login successful with role: admin
-2025-04-26 08:45:04,368 - Login successful with role: admin
-2025-04-26 08:46:06,905 - Login successful with role: admin
-2025-04-26 08:47:55,446 - Login failed
-2025-04-26 08:47:58,816 - Login failed
-2025-04-26 08:48:03,526 - Login successful with role: admin
-2025-04-26 08:51:18,923 - Login successful with role: admin
-2025-04-26 08:53:23,521 - Login successful with role: admin
+2025-04-26 14:13:04,363 - Connection with ('127.0.0.1', 8926) established
+2025-04-26 14:13:11,269 - Login successful with role: user
+2025-04-26 14:13:14,101 - Sent LIST command
+2025-04-26 14:13:14,102 - Received file list
+2025-04-26 14:13:53,557 - Upload error: [WinError 2] The system cannot find the file specified: 'RANDOMFILE.TXT'
+2025-04-26 14:14:26,437 - Requesting download for TEST.TXT
+2025-04-26 14:14:26,437 - Download error: ERROR: File not found
+2025-04-26 14:15:39,677 - Sent LIST command
+2025-04-26 14:16:52,271 - Connection with ('127.0.0.1', 8926) established
+2025-04-26 14:16:57,054 - Login successful with role: user
+2025-04-26 14:17:00,285 - Sent LIST command
+2025-04-26 14:17:00,285 - Received file list
+2025-04-26 14:17:37,997 - Sent EXIT command
+2025-04-26 14:17:37,997 - Connection closed
+2025-04-26 14:17:44,460 - Connection with ('127.0.0.1', 8926) established
+2025-04-26 14:17:49,854 - Login successful with role: user
+2025-04-26 14:18:27,805 - Upload error: [WinError 2] The system cannot find the file specified: 'randomFile.txt'

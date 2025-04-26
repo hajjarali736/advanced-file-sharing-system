@@ -124,11 +124,11 @@ def download_file(filename, clientSocket, resume=False):
             clientSocket.send("START".encode())
             
             mode = "ab" if resume else "wb"
-              #RANIM: im gonna implement the download logic here:
+            #RANIM: im gonna implement the download logic here:
 
             with open(filename, mode) as f:
                 received = offset if resume else 0
-                while received<filesize:
+                while received < filesize:
                     chunk = clientSocket.recv(1024)
                     if not chunk:
                         break
@@ -138,17 +138,18 @@ def download_file(filename, clientSocket, resume=False):
                     save_download_state(filename, received, filesize)
                     print(f"Received {received}/{filesize} bytes")
 
-                    action=input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
-                    if action=="CONTINUE":
+                    action = input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
+                    if action == "CONTINUE":
                         clientSocket.send(b"CONTINUE")
                         continue
-                    elif action=="PAUSE":
+
+                    elif action == "PAUSE":
                         clientSocket.send(b"PAUSE")
                         print("Download paused. You can resume later using RESUME.")
                         log_message("Download paused by user.")
                         return
                     
-                    elif action=="STOP":
+                    elif action == "STOP":
                         clientSocket.send(b"STOP")
                         print("Download stopped by user.")
                         log_message("Download stopped by user.")
@@ -235,8 +236,63 @@ def main():
         clientSocket.close()
         exit()
 
-    command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip().upper()
+    command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip()
     #prompts the user for a command and turns it into uppercase(to make it case-insensitive)
+    while command != "EXIT":
+        if command == "LIST":
+            clientSocket.send(b"LIST")
+            log_message("Sent LIST command")
+            print("Available files:")
+            files_list = clientSocket.recv(4096).decode() #asks the server for list of files, it then receives and prints it
+            print(files_list)
+            log_message("Received file list")
+
+        elif command.startswith("UPLOAD "):
+            filename = command.split()[1]
+            overwrite = False
+            if len(command.split()) == 3 and command.split()[2] == "-o":
+                overwrite = True
+            upload_file(filename, clientSocket, overwrite) #extracts file name ftom the command and calls the upload function
+
+        elif command.startswith("DOWNLOAD "):
+            filename = command.split()[1]
+            download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
+
+        elif command == "PAUSE":
+            state = load_download_state()
+            if state:
+                print(f"Download paused: {state['filename']} at {state['offset']}/{state['total_size']} bytes")
+                clientSocket.send(b"PAUSE")
+                log_message("Sent PAUSE command")
+            else:
+                print("No active download to pause")
+
+        elif command == "RESUME":
+            state = load_download_state()
+            if state:
+                print(f"Resuming download: {state['filename']} from {state['offset']}/{state['total_size']} bytes")
+                download_file(state['filename'], clientSocket, resume=True)
+            else:
+                print("No paused download to resume")
+            
+        elif command.startswith("DELETE "):
+            if (role!="admin"):
+                print("ERROR: Only admin users can delete files.")
+                log_message("Unauthorized delete attempt.")
+            else:
+                filename=command.split()[1]
+                clientSocket.send(f"DELETE {filename}".encode())
+                response=clientSocket.recv(1024).decode()
+                print(response)
+                log_message(f"Delete response: {response}")
+
+        else:
+            error_message = "Invalid command. Format:"
+            print(error_message)
+            print("LIST | UPLOAD filename | DOWNLOAD filename | PAUSE | RESUME | EXIT") #prints usage info if the command doesn't match any supported format
+            log_message(error_message)
+
+        command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip().upper()
 
     if command == "EXIT":
         clientSocket.send(b"EXIT")
@@ -244,63 +300,9 @@ def main():
         clientSocket.close() #closes the socket (it terminates the client)
         log_message("Connection closed")
         
-
-    elif command == "LIST":
-        clientSocket.send(b"LIST")
-        log_message("Sent LIST command")
-        print("Available files:")
-        files_list = clientSocket.recv(4096).decode() #asks the server for list of files, it then receives and prints it
-        print(files_list)
-        log_message("Received file list")
-
-    elif command.startswith("UPLOAD "):
-        filename = command.split()[1]
-        overwrite = False
-        if len(command.split()) == 3 and command.split()[2] == "-o":
-            overwrite = True
-        upload_file(filename, clientSocket, overwrite) #extracts file name ftom the command and calls the upload function
-
-    elif command.startswith("DOWNLOAD "):
-        filename = command.split()[1]
-        download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
-
-    elif command == "PAUSE":
-        state = load_download_state()
-        if state:
-            print(f"Download paused: {state['filename']} at {state['offset']}/{state['total_size']} bytes")
-            clientSocket.send(b"PAUSE")
-            log_message("Sent PAUSE command")
-        else:
-            print("No active download to pause")
-
-    elif command == "RESUME":
-        state = load_download_state()
-        if state:
-            print(f"Resuming download: {state['filename']} from {state['offset']}/{state['total_size']} bytes")
-            download_file(state['filename'], clientSocket, resume=True)
-        else:
-            print("No paused download to resume")
-        
-    elif command.startswith("DELETE "):
-        if (role!="admin"):
-            print("ERROR: Only admin users can delete files.")
-            log_message("Unauthorized delete attempt.")
-        else:
-            filename=command.split()[1]
-            clientSocket.send(f"DELETE {filename}".encode())
-            response=clientSocket.recv(1024).decode()
-            print(response)
-            log_message(f"Delete response: {response}")
-
-
-    else:
-        error_message = "Invalid command. Format:"
-        print(error_message)
-        print("LIST | UPLOAD filename | DOWNLOAD filename | PAUSE | RESUME | EXIT") #prints usage info if the command doesn't match any supported format
-        log_message(error_message)
-
-    clientSocket.close()
-    log_message("Connection closed")
+    # since EXIT is the only way to close the socket, i will remove these lines:
+    #clientSocket.close()
+    #log_message("Connection closed")
 
 
 if __name__ == "__main__":
