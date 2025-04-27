@@ -1,211 +1,178 @@
+import queue
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import tkinter as tk
-
-import tkinter.filedialog as fd
+from tkinter import messagebox, filedialog
 import threading
-import socket
 import os
+import client
+from client import (
+    upload_file,
+    download_file,
+    save_download_state,
+    load_download_state
+)
 
 class MainClientPage(ttk.Window):
-    def __init__(self, client_socket):
-        super().__init__(themename="cyborg")  # Futuristic dark theme
-        self.title("File Sharing Client - Main")
+    def __init__(self, client_socket, username, role):
+        super().__init__(themename="cyborg")
+        self.report_callback_exception = lambda exc, val, tb: None
+
+        self.title(f"Client – {username} ({role})")
         self.geometry("900x600")
         self.resizable(False, False)
 
         self.client_socket = client_socket
-        self.downloading = False
+        self.queue = queue.Queue()
+        self.download_thread = None
+        self.download_paused = False
+        self.active_download = None
 
         self.create_widgets()
         self.fetch_server_files()
 
+        self.after(100, self._process_queue)
+
+    def _process_queue(self):
+        try:
+            while True:
+                evt = self.queue.get_nowait()
+                kind = evt[0]
+                if kind == "progress":
+                    _, current, total = evt
+                    self.progress['value'] = (current / total) * 100
+                    self.update_idletasks()
+                elif kind == "done":
+                    messagebox.showinfo("Download Completed", "The file was downloaded successfully!")
+                    self.progress['value'] = 0
+                    self.pause_btn.config(state=DISABLED)
+                    self.resume_btn.config(state=DISABLED)
+                elif kind == "error":
+                    _, err = evt
+                    messagebox.showerror("Download Failed", f"Error: {err}")
+                    self.progress['value'] = 0
+                    self.pause_btn.config(state=DISABLED)
+                    self.resume_btn.config(state=DISABLED)
+                self.queue.task_done()
+        except queue.Empty:
+            pass
+        finally:
+            self.after(100, self._process_queue)
+
     def create_widgets(self):
-        # Top Button Bar
-        button_frame = ttk.Frame(self)
-        button_frame.pack(pady=10)
+        btn_frame = ttk.Frame(self)
+        btn_frame.pack(pady=10)
 
-        self.upload_btn = ttk.Button(button_frame, text="Upload File", bootstyle="primary", command=self.upload_file)
-        self.upload_btn.grid(row=0, column=0, padx=10)
+        ttk.Button(btn_frame, text="Upload File", bootstyle="primary", command=self.upload_file).grid(row=0, column=0, padx=5)
+        ttk.Button(btn_frame, text="Download Selected", bootstyle="success", command=self.download_selected_file).grid(row=0, column=1, padx=5)
+        ttk.Button(btn_frame, text="Refresh", bootstyle="info", command=self.fetch_server_files).grid(row=0, column=2, padx=5)
+        self.pause_btn = ttk.Button(btn_frame, text="Pause", bootstyle="warning", command=self.pause_download, state=DISABLED)
+        self.pause_btn.grid(row=0, column=3, padx=5)
+        self.resume_btn = ttk.Button(btn_frame, text="Resume", bootstyle="secondary", command=self.resume_download, state=DISABLED)
+        self.resume_btn.grid(row=0, column=4, padx=5)
+        ttk.Button(btn_frame, text="Logout", bootstyle="danger", command=self.logout).grid(row=0, column=5, padx=5)
 
-        self.download_btn = ttk.Button(button_frame, text="Download Selected", bootstyle="success", command=self.download_selected_file)
-        self.download_btn.grid(row=0, column=1, padx=10)
-
-        self.refresh_btn = ttk.Button(button_frame, text="Refresh", bootstyle="info", command=self.fetch_server_files)
-        self.refresh_btn.grid(row=0, column=2, padx=10)
-
-        self.pause_btn = ttk.Button(button_frame, text="Pause Download", bootstyle="warning", command=self.pause_download, state=DISABLED)
-        self.pause_btn.grid(row=0, column=3, padx=10)
-
-        self.resume_btn = ttk.Button(button_frame, text="Resume Download", bootstyle="secondary", command=self.resume_download, state=DISABLED)
-        self.resume_btn.grid(row=0, column=4, padx=10)
-
-        self.logout_btn = ttk.Button(button_frame, text="Logout", bootstyle="danger", command=self.logout)
-        self.logout_btn.grid(row=0, column=5, padx=10)
-
-        # Server Files List
         self.files_listbox = tk.Listbox(self, width=80, height=20)
-        self.files_listbox.pack(pady=20)
+        self.files_listbox.pack(pady=10)
 
-
-        # Download Progress Bar
-        self.progress = ttk.Progressbar(self, bootstyle="success-striped", length=700, mode="determinate")
-        self.progress.pack(pady=10)
-
-        # Status Label
-        self.status_label = ttk.Label(self, text="", font=("Poppins", 12), bootstyle="warning")
-        self.status_label.pack()
+        self.progress = ttk.Progressbar(self, bootstyle="success-striped", length=700, mode="determinate", maximum=100)
+        self.progress.pack(pady=10, padx=20)
 
     def fetch_server_files(self):
         try:
             self.client_socket.sendall(b"LIST")
-            files = self.client_socket.recv(4096).decode()
-
+            data = self.client_socket.recv(4096).decode()
             self.files_listbox.delete(0, tk.END)
-
-            if not files.strip():
-                if hasattr(self, 'status_label'):
-                    self.status_label.config(text="No files found on server.")
-                print("Server responded: No files found.")
-                return
-
-            print("Files on server:")
-            for file in files.strip().split("\n"):
-                self.files_listbox.insert(tk.END, file.strip())
-                print(file.strip())
-
-            if hasattr(self, 'status_label'):
-                self.status_label.config(text="File list updated.")
-
+            if data.strip():
+                for line in data.splitlines():
+                    self.files_listbox.insert(tk.END, line.strip())
+            else:
+                messagebox.showinfo("Info", "No files on server.")
         except Exception as e:
-            print(f"Error fetching files: {str(e)}")
-            if hasattr(self, 'status_label'):
-                try:
-                    self.status_label.config(text=f"Error fetching files: {str(e)}")
-                except Exception:
-                    pass  # Ignore if window is already closed
-
-
-
-    def upload_file(self):
-        filepath = fd.askopenfilename()
-        if not filepath:
-            return
-
-        filename = os.path.basename(filepath)
-        filesize = os.path.getsize(filepath)
-
-        overwrite = messagebox.askyesno("Overwrite?", "Overwrite if file already exists on server?")
-        command = f"UPLOAD {filename} {filesize} {self.calculate_checksum(filepath)}"
-        if overwrite:
-            command += " -o"
-
-        try:
-            self.client_socket.sendall(command.encode())
-            with open(filepath, "rb") as f:
-                while True:
-                    chunk = f.read(1024)
-                    if not chunk:
-                        break
-                    self.client_socket.sendall(chunk)
-
-            response = self.client_socket.recv(1024).decode()
-            self.status_label.config(text=response)
-            self.fetch_server_files()
-
-        except Exception as e:
-            self.status_label.config(text=f"Upload failed: {str(e)}")
+            messagebox.showerror("Error", f"Could not fetch list: {e}")
 
     def download_selected_file(self):
-        selection = self.files_listbox.curselection()
-        if not selection:
-            messagebox.showwarning("No file selected", "Please select a file to download.")
+        sel = self.files_listbox.curselection()
+        if not sel:
+            messagebox.showwarning("Select", "Please select a file first.")
+            return
+        filename = self.files_listbox.get(sel[0]).split(". ")[-1]
+        save_path = filedialog.asksaveasfilename(initialfile=filename)
+        if not save_path:
             return
 
-        filename = self.files_listbox.get(selection[0])  # FIX: no split
-
-        try:
-            self.client_socket.sendall(f"DOWNLOAD {filename}".encode())
-            response = self.client_socket.recv(1024).decode()
-
-            if not response.startswith("filesize"):  # ADD: error handling
-                self.status_label.config(text=f"Server error: {response}")
-                return
-
-            parts = response.split()
-            filesize = int(parts[1])
-            checksum = int(parts[2])
-
-            self.client_socket.sendall(b"START")
-
-            save_path = os.path.join(os.getcwd(), filename)
-
-            self.downloading = True
-            self.pause_btn.config(state=NORMAL)
-            self.resume_btn.config(state=DISABLED)
-            threading.Thread(target=self.receive_file, args=(save_path, filesize, checksum)).start()
-        except Exception as e:
-            self.status_label.config(text=f"Download failed: {str(e)}")
-
-
-    def receive_file(self, save_path, filesize, expected_checksum):
-        received = 0
-        with open(save_path, "wb") as f:
-            while received < filesize:
-                if not self.downloading:
-                    break
-                chunk = self.client_socket.recv(1024)
-                if not chunk:
-                    break
-                f.write(chunk)
-                received += len(chunk)
-                progress = (received / filesize) * 100
-                self.progress['value'] = progress
-                self.update_idletasks()
-
-        # After download
-        actual_checksum = self.calculate_checksum(save_path)
-        if actual_checksum == expected_checksum:
-            self.status_label.config(text="Download complete! File verified.")
-        else:
-            self.status_label.config(text="Download complete but checksum mismatch!")
-
-        self.pause_btn.config(state=DISABLED)
+        self.pause_btn.config(state=NORMAL)
         self.resume_btn.config(state=DISABLED)
+        self.active_download = filename
+
+        def worker():
+            try:
+                download_file(
+                    filename=filename,
+                    clientSocket=self.client_socket,
+                    gui_callback=lambda c, t: self.queue.put(("progress", c, t)),
+                    save_path=save_path
+                )
+                self.queue.put(("done",))
+            except Exception as e:
+                self.queue.put(("error", str(e)))
+
+        self.download_thread = threading.Thread(target=worker, daemon=True)
+        self.download_thread.start()
 
     def pause_download(self):
-        if self.downloading:
-            self.client_socket.sendall(b"PAUSE")
-            self.downloading = False
-            self.status_label.config(text="Download paused.")
-            self.pause_btn.config(state=DISABLED)
-            self.resume_btn.config(state=NORMAL)
+        if self.download_thread and self.download_thread.is_alive():
+            try:
+                self.client_socket.sendall(b"PAUSE")
+                self.pause_btn.config(state=DISABLED)
+                self.resume_btn.config(state=NORMAL)
+                messagebox.showinfo("Paused", "Download paused. You can resume later.")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to pause: {e}")
 
     def resume_download(self):
-        if not self.downloading:
-            self.client_socket.sendall(b"CONTINUE")
-            self.downloading = True
-            self.status_label.config(text="Resuming download...")
-            self.pause_btn.config(state=NORMAL)
-            self.resume_btn.config(state=DISABLED)
+        state = load_download_state()
+        if not state or state["filename"] != self.active_download:
+            messagebox.showwarning("Nothing to resume", "No paused download found.")
+            return
+
+        self.pause_btn.config(state=NORMAL)
+        self.resume_btn.config(state=DISABLED)
+
+        def worker():
+            try:
+                download_file(
+                    filename=state["filename"],
+                    clientSocket=self.client_socket,
+                    resume=True,
+                    gui_callback=lambda c, t: self.queue.put(("progress", c, t)),
+                    save_path=state["save_path"]
+                )
+                self.queue.put(("done",))
+            except Exception as e:
+                self.queue.put(("error", str(e)))
+
+        self.download_thread = threading.Thread(target=worker, daemon=True)
+        self.download_thread.start()
+
+    def upload_file(self):
+        path = filedialog.askopenfilename()
+        if not path:
+            return
+        fname = os.path.basename(path)
+        overwrite = messagebox.askyesno("Overwrite?", "Overwrite if exists?")
+        def worker():
+            try:
+                upload_file(fname, self.client_socket, overwrite)
+                self.fetch_server_files()
+                messagebox.showinfo("Done", f"{fname} uploaded.")
+            except Exception as e:
+                messagebox.showerror("Error", f"Upload failed: {e}")
+        threading.Thread(target=worker, daemon=True).start()
 
     def logout(self):
         try:
             self.client_socket.sendall(b"EXIT")
             self.client_socket.close()
+        finally:
             self.destroy()
-        except:
-            self.destroy()
-
-    def calculate_checksum(self, filename):
-        checksum = 0
-        try:
-            with open(filename, "rb") as f:
-                while True:
-                    chunk = f.read(1024)
-                    if not chunk:
-                        break
-                    checksum += sum(chunk)
-            return checksum % 65536
-        except:
-            return 0

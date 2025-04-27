@@ -82,13 +82,14 @@ def upload_file(filename, clientSocket, overwrite):
         print(error_message)
         log_message(error_message)
 
-def save_download_state(filename, offset, total_size):
+def save_download_state(filename, offset, total_size, save_path=None):
     """Save the current download state"""
     global download_state
     download_state = {
         "filename": filename,
         "offset": offset,
-        "total_size": total_size
+        "total_size": total_size,
+        "save_path": save_path
     }
     log_message(f"Saved download state for {filename} at offset {offset}")
 
@@ -103,7 +104,7 @@ def clear_download_state():
     download_state = None
     log_message("Cleared download state")
 
-def download_file(filename, clientSocket, resume=False):
+def download_file(filename, clientSocket, resume=False, gui_callback=None, save_path=None):
     try:
         if resume:
             state = load_download_state()
@@ -117,10 +118,11 @@ def download_file(filename, clientSocket, resume=False):
         else:
             offset=0#Ranim: I added this to make sure that the offset is defined when not resuming
             #that is, without it, offset would only be defined in the "resume==True" branch
+            offset = 0
             log_message(f"Requesting download for {filename}")
             clientSocket.send(f"DOWNLOAD {filename}".encode())
         
-        response = clientSocket.recv(1024).decode() #receives its response(either confirmation+file size or error)
+        response = clientSocket.recv(1024).decode()
         
         if response.startswith("filesize"):
             # Parse filesize and checksum from response
@@ -130,14 +132,14 @@ def download_file(filename, clientSocket, resume=False):
             log_message(f"File size received: {filesize} bytes, expected checksum: {expected_checksum}")
             
             if not resume:
-                save_download_state(filename, 0, filesize)
+                save_download_state(filename, 0, filesize, save_path)
             
             clientSocket.send("START".encode())
             
             mode = "ab" if resume else "wb"
             #RANIM: im gonna implement the download logic here:
 
-            with open(filename, mode) as f:
+            with open(save_path if save_path else filename, mode) as f:
                 received = offset if resume else 0
                 while received < filesize:
                     chunk = clientSocket.recv(1024)
@@ -149,55 +151,51 @@ def download_file(filename, clientSocket, resume=False):
                     save_download_state(filename, received, filesize)
                     print(f"Received {received}/{filesize} bytes")
 
-                    action = input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
-                    if action == "CONTINUE":
-                        clientSocket.send(b"CONTINUE")
-                        continue
-
-                    elif action == "PAUSE":
-                        clientSocket.send(b"PAUSE")
-                        print("Download paused. You can resume later using RESUME.")
-                        log_message("Download paused by user.")
-                        return
-                    
-                    elif action == "STOP":
-                        clientSocket.send(b"STOP")
-                        print("Download stopped by user.")
-                        log_message("Download stopped by user.")
-                        return
-                    
+                    if gui_callback:
+                        gui_callback(received, filesize)
+                        # clientSocket.send(b"CONTINUE")
                     else:
-                        print("Invalid action, Defaulting to CONTINUE")
-                        clientSocket.send(b"CONTINUE")
+                        action = input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
+                        if action == "CONTINUE":
+                            clientSocket.send(b"CONTINUE")
+                            continue
+                        elif action == "PAUSE":
+                            clientSocket.send(b"PAUSE")
+                            print("Download paused. You can resume later.")
+                            log_message("Download paused by user.")
+                            return
+                        elif action == "STOP":
+                            clientSocket.send(b"STOP")
+                            print("Download stopped by user.")
+                            log_message("Download stopped by user.")
+                            return
+                        else:
+                            print("Invalid action, defaulting to CONTINUE")
+                            clientSocket.send(b"CONTINUE")
 
-            # Verify checksum after download
-
-          
-
-            
-
-            actual_checksum = calculate_checksum(filename)
+            # After download
+            actual_checksum = calculate_checksum(save_path if save_path else filename)
             if actual_checksum == expected_checksum:
                 success_message = f"Downloaded {filename} successfully (checksum verified)"
-                print(success_message)  
+                print(success_message)
                 log_message(success_message)
                 clear_download_state()
             else:
                 error_message = f"Checksum verification failed for {filename}. File may be corrupted."
                 print(error_message)
                 log_message(error_message)
-                # Delete corrupted file
-                os.remove(filename)
+                os.remove(save_path if save_path else filename)
                 log_message(f"Deleted corrupted file: {filename}")
                 clear_download_state()
         else:
-            print(response)  # Error message
+            print(response)
             log_message(f"Download error: {response}")
     
     except Exception as e:
         error_message = f"Download error: {str(e)}"
         print(error_message)
         log_message(error_message)
+
 
 def connect_to_server():
     client_socket = socket(AF_INET, SOCK_STREAM)
