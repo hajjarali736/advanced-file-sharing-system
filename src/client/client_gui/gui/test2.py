@@ -1,5 +1,22 @@
 import sys
 import os
+
+current_dir = os.path.dirname(__file__)
+client_dir = os.path.abspath(os.path.join(current_dir, '..', '..', '..'))
+sys.path.insert(0, client_dir)
+from client import (
+    upload_file,
+    download_file,
+    save_download_state,
+    load_download_state,
+    login,
+    connect_to_server,
+    clear_download_state,
+    calculate_checksum,
+    hash_password,
+    log_message
+)
+
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import threading
@@ -7,104 +24,14 @@ import socket
 import hashlib
 import logging
 from pathlib import Path
-from socket import *
 
 # Server connection settings
 SERVER_NAME = '127.0.0.1'
 SERVER_PORT = 8926
 
-# Set up logging
-log_file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
-logging.basicConfig(
-    filename=log_file_path,
-    level=logging.INFO,
-    format="%(asctime)s - %(message)s"
-)
-
 # Global variables
 download_state = None
 is_downloading = False
-download_paused = False
-
-def log_message(message):
-    """Log a message to the log file"""
-    logging.info(message)
-
-def hash_password(password):
-    """Client-side password hashing"""
-    return hashlib.sha256(password.encode()).hexdigest()
-
-def calculate_checksum(filename):
-    """Calculate 16-bit checksum of a file"""
-    checksum = 0
-    try:
-        with open(filename, "rb") as f:
-            while True:
-                chunk = f.read(1024)
-                if not chunk:
-                    break
-                # Sum up ASCII values of all bytes in the file
-                checksum += sum(chunk)
-        # Take modulo 65536 to get 16-bit checksum
-        return checksum % 65536
-    except Exception as e:
-        log_message(f"Error calculating checksum: {str(e)}")
-        return None
-
-def connect_to_server():
-    """Connect to the server and return the socket"""
-    try:
-        client_socket = socket(AF_INET, SOCK_STREAM)
-        client_socket.connect((SERVER_NAME, SERVER_PORT))
-        log_message(f"Connection with {client_socket.getpeername()} established")
-        return client_socket
-    except Exception as e:
-        log_message(f"Connection error: {str(e)}")
-        return None
-
-def login(username, password, client_socket):
-    """Login to the server"""
-    try:
-        # Hash the password before sending
-        hashed_password = hash_password(password)
-        
-        client_socket.send(f"LOGIN {username} {hashed_password}".encode())
-        response = client_socket.recv(1024).decode()
-
-        if response.startswith("LOGIN_SUCCESS"):
-            role = response.split()[1]
-            log_message(f"Login successful with role: {role}")
-            return True, role
-        else:
-            log_message("Login failed")
-            return False, None
-
-    except Exception as e:
-        log_message(f"Login error: {str(e)}")
-        return False, None
-
-def save_download_state(filename, offset, total_size, save_path=None, checksum=None):
-    """Save the current download state"""
-    global download_state
-    download_state = {
-        "filename": filename,
-        "offset": offset,
-        "total_size": total_size,
-        "save_path": save_path,
-        "checksum": checksum
-    }
-    log_message(f"Saved download state for {filename} at offset {offset}")
-
-def load_download_state():
-    """Load the current download state"""
-    global download_state
-    return download_state
-
-def clear_download_state():
-    """Clear the download state"""
-    global download_state
-    download_state = None
-    log_message("Cleared download state")
 
 class LoginWindow(tk.Tk):
     def __init__(self):
@@ -175,8 +102,11 @@ class LoginWindow(tk.Tk):
                 self.status_label.config(text="Failed to connect to server")
                 return
             
+            # Hash the password before login
+            hashed_password = hash_password(password)
+            
             # Try to login
-            success, role = login(username, password, sock)
+            success, role = login(username, hashed_password, sock)
             
             if success:
                 messagebox.showinfo("Login Success", f"Welcome, {username}!")
@@ -216,9 +146,8 @@ class LoginWindow(tk.Tk):
             response = sock.recv(1024).decode()
             
             if response.startswith("REGISTER_SUCCESS"):
-                role = response.split()[1]
-                self.status_label.config(text=f"Registration successful as {role}! You can now login.", fg="green")
-                log_message(f"Registration successful for user: {username} with role: {role}")
+                self.status_label.config(text="Registration successful! You can now login.", fg="green")
+                log_message(f"Registration successful for user: {username}")
             else:
                 self.status_label.config(text="Registration failed. Username may already exist.")
                 log_message("Registration failed")
@@ -234,6 +163,32 @@ class LoginWindow(tk.Tk):
         main_window.destroy()
         self.deiconify()  # Show login window again
 
+class LogViewerWindow(tk.Toplevel):
+    def __init__(self, parent, logs_content):
+        super().__init__(parent)
+        self.title("Server Logs")
+        self.geometry("800x600")
+        self.configure(bg="white")
+        
+        # Create text widget
+        self.text_widget = tk.Text(self, wrap=tk.WORD, font=("Courier", 10))
+        self.text_widget.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # Add scrollbar
+        scrollbar = tk.Scrollbar(self.text_widget)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.text_widget.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.text_widget.yview)
+        
+        # Insert logs content
+        self.text_widget.insert(tk.END, logs_content)
+        self.text_widget.config(state=tk.DISABLED)  # Make read-only
+        
+        # Close button
+        close_button = tk.Button(self, text="Close", command=self.destroy,
+                               bg="#F44336", fg="white", font=("Arial", 10))
+        close_button.pack(pady=10)
+
 class MainWindow(tk.Toplevel):
     def __init__(self, client_socket, username, role):
         super().__init__()
@@ -245,8 +200,6 @@ class MainWindow(tk.Toplevel):
         self.client_socket = client_socket
         self.username = username
         self.role = role
-        self.download_thread = None
-        self.upload_thread = None
         
         self.create_widgets()
         self.refresh_files()
@@ -268,6 +221,12 @@ class MainWindow(tk.Toplevel):
             role_label = tk.Label(user_frame, text=" (Admin)", 
                                  font=("Arial", 12), bg="#f0f0f0")
             role_label.pack(side=tk.LEFT)
+            
+            # Add View Logs button for admin
+            view_logs_button = tk.Button(user_frame, text="View Logs", 
+                                       font=("Arial", 10), bg="#673AB7", fg="white",
+                                       command=self.view_logs)
+            view_logs_button.pack(side=tk.RIGHT)
         
         # Buttons
         buttons_frame = tk.Frame(main_frame, bg="#f0f0f0")
@@ -285,6 +244,12 @@ class MainWindow(tk.Toplevel):
                                         bg="#FF9800", fg="white", command=self.download_file)
         self.download_button.pack(side=tk.LEFT, padx=5)
         
+        # Add Delete button for admin
+        if self.role == "admin":
+            self.delete_button = tk.Button(buttons_frame, text="Delete File", font=("Arial", 10),
+                                         bg="#F44336", fg="white", command=self.delete_file)
+            self.delete_button.pack(side=tk.LEFT, padx=5)
+        
         self.pause_button = tk.Button(buttons_frame, text="Pause", font=("Arial", 10),
                                      bg="#9C27B0", fg="white", command=self.pause_transfer, state=tk.DISABLED)
         self.pause_button.pack(side=tk.LEFT, padx=5)
@@ -292,16 +257,6 @@ class MainWindow(tk.Toplevel):
         self.resume_button = tk.Button(buttons_frame, text="Resume", font=("Arial", 10),
                                       bg="#009688", fg="white", command=self.resume_transfer, state=tk.DISABLED)
         self.resume_button.pack(side=tk.LEFT, padx=5)
-        
-        # Admin buttons
-        if self.role == "admin":
-            self.delete_button = tk.Button(buttons_frame, text="Delete Selected", font=("Arial", 10),
-                                         bg="#F44336", fg="white", command=self.delete_file)
-            self.delete_button.pack(side=tk.LEFT, padx=5)
-            
-            self.view_logs_button = tk.Button(buttons_frame, text="View Logs", font=("Arial", 10),
-                                            bg="#795548", fg="white", command=self.view_logs)
-            self.view_logs_button.pack(side=tk.LEFT, padx=5)
         
         self.logout_button = tk.Button(buttons_frame, text="Logout", font=("Arial", 10),
                                       bg="#F44336", fg="white", command=self.logout)
@@ -350,27 +305,9 @@ class MainWindow(tk.Toplevel):
         self.status_label = tk.Label(status_frame, text="Ready", 
                                     font=("Arial", 10), bg="#f0f0f0")
         self.status_label.pack(side=tk.LEFT)
-        
-        # Logs frame (hidden by default)
-        self.logs_frame = tk.Toplevel(self)
-        self.logs_frame.title("Server Logs")
-        self.logs_frame.geometry("700x500")
-        self.logs_frame.withdraw()  # Hide initially
-        
-        self.logs_text = tk.Text(self.logs_frame, font=("Courier", 10))
-        self.logs_text.pack(fill=tk.BOTH, expand=True)
-        
-        logs_scrollbar = tk.Scrollbar(self.logs_text)
-        logs_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        
-        self.logs_text.config(yscrollcommand=logs_scrollbar.set)
-        logs_scrollbar.config(command=self.logs_text.yview)
-        
-        close_button = tk.Button(self.logs_frame, text="Close", command=lambda: self.logs_frame.withdraw())
-        close_button.pack(pady=10)
     
     def update_progress_bar(self, progress):
-        """Update the progress bar"""
+        """Update the progress bar from any thread"""
         self.progress_var.set(progress)
         self.progress_label.config(text=f"{progress}%")
     
@@ -398,6 +335,88 @@ class MainWindow(tk.Toplevel):
             messagebox.showerror("Error", f"Could not fetch file list: {str(e)}")
             log_message(f"Error fetching file list: {str(e)}")
     
+    def delete_file(self):
+        """Delete a file from the server (admin only)"""
+        if self.role != "admin":
+            messagebox.showerror("Error", "Only administrators can delete files")
+            log_message("Unauthorized delete attempt")
+            return
+        
+        # Check if a file is selected
+        selected = self.files_listbox.curselection()
+        if not selected:
+            messagebox.showinfo("Select File", "Please select a file to delete")
+            return
+        
+        # Get filename
+        filename_text = self.files_listbox.get(selected[0])
+        if '. ' in filename_text:  # Format: "1. filename"
+            filename = filename_text.split('. ', 1)[1].strip()
+        elif ' | ' in filename_text:  # Format: "filename | size | date"
+            filename = filename_text.split(' | ')[0].strip()
+        else:
+            filename = filename_text.strip()
+        
+        # Confirm deletion
+        if not messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete {filename}?"):
+            return
+        
+        try:
+            # Send delete command
+            self.client_socket.send(f"DELETE {filename}".encode())
+            response = self.client_socket.recv(1024).decode()
+            
+            # Show response
+            messagebox.showinfo("Delete Result", response)
+            log_message(f"Delete response: {response}")
+            
+            # Refresh file list
+            self.refresh_files()
+        
+        except Exception as e:
+            error_message = f"Delete error: {str(e)}"
+            messagebox.showerror("Error", error_message)
+            log_message(error_message)
+    
+    def view_logs(self):
+        """View server logs (admin only)"""
+        if self.role != "admin":
+            messagebox.showerror("Error", "Only administrators can view logs")
+            return
+        
+        try:
+            # Send view logs command
+            self.client_socket.send(b"VIEW_LOGS")
+            response = self.client_socket.recv(1024).decode()
+            
+            if response.startswith("AUTHORIZED"):
+                # Send start command to begin receiving logs
+                self.client_socket.send(b"START")
+                
+                # Receive logs content
+                logs_content = ""
+                while True:
+                    chunk = self.client_socket.recv(1024)
+                    if not chunk:
+                        break
+                    logs_content += chunk.decode()
+                    
+                    # Check if we've received all the logs
+                    if logs_content.endswith("\n\n"):
+                        break
+                
+                # Open logs viewer window
+                LogViewerWindow(self, logs_content)
+                log_message("Logs viewed successfully")
+            else:
+                messagebox.showerror("Error", "Unauthorized to view logs")
+                log_message("Unauthorized view logs attempt")
+        
+        except Exception as e:
+            error_message = f"Error viewing logs: {str(e)}"
+            messagebox.showerror("Error", error_message)
+            log_message(error_message)
+    
     def upload_file(self):
         """Upload a file to the server"""
         # Select file
@@ -417,12 +436,9 @@ class MainWindow(tk.Toplevel):
         self.status_label.config(text=f"Preparing to upload {filename}...")
         
         # Start upload in a thread
-        self.upload_thread = threading.Thread(
-            target=self._upload_thread, 
-            args=(file_path, filename, overwrite), 
-            daemon=True
-        )
-        self.upload_thread.start()
+        threading.Thread(target=self._upload_thread, 
+                        args=(file_path, filename, overwrite), 
+                        daemon=True).start()
     
     def _upload_thread(self, file_path, filename, overwrite):
         """Thread function for file upload"""
@@ -458,6 +474,7 @@ class MainWindow(tk.Toplevel):
                     progress = int((sent / filesize) * 100)
                     self.after(0, self.update_progress_bar, progress)
                     self.status_label.config(text=f"Uploading {filename}: {sent}/{filesize} bytes")
+                    self.update_idletasks()  # Force UI update
             
             # Get response
             response = self.client_socket.recv(1024).decode()
@@ -477,8 +494,8 @@ class MainWindow(tk.Toplevel):
             log_message(error_message)
     
     def download_file(self):
-        """Download a file from the server"""
-        global is_downloading, download_paused
+        """Download a file from the server directly to the application directory"""
+        global is_downloading
         
         # Check if a file is selected
         selected = self.files_listbox.curselection()
@@ -495,10 +512,13 @@ class MainWindow(tk.Toplevel):
         else:
             filename = filename_text.strip()
         
-        # Ask for save location
+        # Set save path to current directory
         save_path = os.path.join(os.path.dirname(__file__), filename)
-        if not save_path:
-            return
+        
+        # Check if file already exists
+        if os.path.exists(save_path):
+            if not messagebox.askyesno("File Exists", f"File {filename} already exists. Overwrite?"):
+                return
         
         # Reset progress bar
         self.progress_var.set(0)
@@ -507,21 +527,17 @@ class MainWindow(tk.Toplevel):
         
         # Enable pause button
         is_downloading = True
-        download_paused = False
         self.pause_button.config(state=tk.NORMAL)
         self.resume_button.config(state=tk.DISABLED)
         
         # Start download in a thread
-        self.download_thread = threading.Thread(
-            target=self._download_thread, 
-            args=(filename, save_path, False), 
-            daemon=True
-        )
-        self.download_thread.start()
+        threading.Thread(target=self._download_thread, 
+                        args=(filename, save_path, False), 
+                        daemon=True).start()
     
     def _download_thread(self, filename, save_path, resume=False):
         """Thread function for file download"""
-        global is_downloading, download_paused
+        global is_downloading
         
         try:
             temp_path = f"{save_path}.part"
@@ -536,148 +552,144 @@ class MainWindow(tk.Toplevel):
                 
                 offset = state["offset"]
                 total_size = state["total_size"]
-                expected_checksum = state.get("checksum")
-                
                 log_message(f"Resuming download of {filename} from offset {offset}")
+                
                 self.client_socket.send(f"DOWNLOAD {filename} resume".encode())
-                
                 response = self.client_socket.recv(1024).decode()
+                
                 if not response.startswith("filesize"):
-                    self.status_label.config(text=response)
-                    messagebox.showerror("Download Error", response)
+                    messagebox.showerror("Error", response)
                     is_downloading = False
                     self.pause_button.config(state=tk.DISABLED)
                     return
                 
-                parts = response.split()
-                filesize = int(parts[1])
-                server_checksum = int(parts[2])
-                server_offset = int(parts[3]) if len(parts) >= 4 else 0
-                
-                if server_offset != offset:
-                    error_msg = f"Server offset {server_offset} does not match local offset {offset}"
-                    self.status_label.config(text=error_msg)
-                    messagebox.showerror("Download Error", error_msg)
-                    is_downloading = False
-                    self.pause_button.config(state=tk.DISABLED)
-                    return
-                
-                # Update expected checksum if not set
-                if expected_checksum is None:
-                    expected_checksum = server_checksum
-                    save_download_state(filename, offset, filesize, save_path, expected_checksum)
-                
-                self.client_socket.send("START".encode())
-                
-                with open(temp_path, "ab") as f:
-                    received = offset
-                    while received < filesize and is_downloading:
-                        if download_paused:
-                            self.status_label.config(text=f"Download paused at {received}/{filesize} bytes")
-                            return
-                        
-                        chunk = self.client_socket.recv(1024)
-                        if not chunk:
-                            break
-                        
-                        f.write(chunk)
-                        received += len(chunk)
-                        save_download_state(filename, received, filesize, save_path, expected_checksum)
-                        
-                        progress = int((received / filesize) * 100)
-                        self.after(0, self.update_progress_bar, progress)
-                        self.status_label.config(text=f"Downloading {filename}: {received}/{filesize} bytes")
-                        
-                        # Send continue signal to server
-                        self.client_socket.send(b"CONTINUE")
-                
-                if not is_downloading or download_paused:
-                    self.status_label.config(text=f"Download of {filename} paused")
-                    return
-                
-                # Verify checksum
-                self.status_label.config(text="Verifying file integrity...")
-                actual_checksum = calculate_checksum(temp_path)
-                
-                if actual_checksum == expected_checksum:
-                    os.rename(temp_path, save_path)
-                    self.status_label.config(text=f"Downloaded {filename} successfully (checksum verified)")
-                    messagebox.showinfo("Download Complete", f"Downloaded {filename} successfully")
-                    clear_download_state()
-                else:
-                    error_message = f"Checksum verification failed for {filename}. File may be corrupted."
-                    self.status_label.config(text=error_message)
-                    messagebox.showerror("Download Error", error_message)
-                    if os.path.exists(save_path):
-                        os.remove(save_path)
-                    clear_download_state()
-            
-            else:  # New download
-                self.client_socket.send(f"DOWNLOAD {filename}".encode())
-                
-                response = self.client_socket.recv(1024).decode()
-                if not response.startswith("filesize"):
-                    self.status_label.config(text=response)
-                    messagebox.showerror("Download Error", response)
-                    is_downloading = False
-                    self.pause_button.config(state=tk.DISABLED)
-                    return
-                
+                # Parse response
                 parts = response.split()
                 filesize = int(parts[1])
                 expected_checksum = int(parts[2])
+                server_offset = int(parts[3]) if len(parts) >= 4 else 0
                 
+                if server_offset != offset:
+                    messagebox.showerror("Error", f"Server offset {server_offset} does not match local offset {offset}")
+                    is_downloading = False
+                    self.pause_button.config(state=tk.DISABLED)
+                    return
+                
+                self.client_socket.send(b"START")
+                
+                with open(temp_path, "ab") as f:
+                    received = offset
+                    while received < total_size and is_downloading:
+                        chunk = self.client_socket.recv(1024)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        received += len(chunk)
+                        save_download_state(filename, received, total_size, save_path)
+
+                        progress = int((received / total_size) * 100)
+                        self.after(0, self.update_progress_bar, progress)
+                        self.status_label.config(text=f"Resuming download of {filename}: {received}/{total_size} bytes")
+                        self.update_idletasks()
+                        
+                        if is_downloading:
+                            self.client_socket.send(b"CONTINUE")
+                        else:
+                            self.client_socket.send(b"PAUSE")
+                            break
+                    
+                    if not is_downloading:
+                        self.status_label.config(text=f"Download of {filename} paused")
+                        return
+                    
+                    # Verify checksum
+                    self.status_label.config(text=f"Verifying file integrity...")
+                    actual_checksum = calculate_checksum(temp_path)
+                    
+                    if actual_checksum == expected_checksum:
+                        os.rename(temp_path, save_path)
+                        self.status_label.config(text=f"Downloaded {filename} successfully (checksum verified)")
+                        messagebox.showinfo("Download Complete", f"Downloaded {filename} successfully")
+                        clear_download_state()
+                    else:
+                        error_message = f"Checksum verification failed for {filename}. File may be corrupted."
+                        self.status_label.config(text=error_message)
+                        messagebox.showerror("Download Error", error_message)
+                        if os.path.exists(temp_path):
+                            os.remove(temp_path)
+                        clear_download_state()
+            else:
+                # Start a new download
+                self.client_socket.send(f"DOWNLOAD {filename}".encode())
+                
+                # Get response
+                response = self.client_socket.recv(1024).decode()
+                
+                if not response.startswith("filesize"):
+                    messagebox.showerror("Error", response)
+                    is_downloading = False
+                    self.pause_button.config(state=tk.DISABLED)
+                    return
+                
+                # Parse file size and checksum
+                parts = response.split()
+                filesize = int(parts[1])
+                expected_checksum = int(parts[2])
                 log_message(f"File size received: {filesize} bytes, expected checksum: {expected_checksum}")
-                save_download_state(filename, 0, filesize, save_path, expected_checksum)
                 
-                self.client_socket.send("START".encode())
+                # Save download state
+                save_download_state(filename, 0, filesize, save_path)
+                
+                # Start download
+                self.client_socket.send(b"START")
                 
                 with open(temp_path, "wb") as f:
                     received = 0
                     while received < filesize and is_downloading:
-                        if download_paused:
-                            self.status_label.config(text=f"Download paused at {received}/{filesize} bytes")
-                            return
-                        
                         chunk = self.client_socket.recv(1024)
                         if not chunk:
                             break
-                        
                         f.write(chunk)
                         received += len(chunk)
-                        save_download_state(filename, received, filesize, save_path, expected_checksum)
+                        save_download_state(filename, received, filesize, save_path)
                         
                         progress = int((received / filesize) * 100)
                         self.after(0, self.update_progress_bar, progress)
                         self.status_label.config(text=f"Downloading {filename}: {received}/{filesize} bytes")
+                        self.update_idletasks()
                         
-                        # Send continue signal to server
-                        self.client_socket.send(b"CONTINUE")
-                
-                if not is_downloading or download_paused:
-                    self.status_label.config(text=f"Download of {filename} paused")
-                    return
-                
-                # Verify checksum
-                self.status_label.config(text="Verifying file integrity...")
-                actual_checksum = calculate_checksum(temp_path)
-                
-                if actual_checksum == expected_checksum:
-                    os.rename(temp_path, save_path)
-                    self.status_label.config(text=f"Downloaded {filename} successfully (checksum verified)")
-                    messagebox.showinfo("Download Complete", f"Downloaded {filename} successfully")
-                    clear_download_state()
-                else:
-                    error_message = f"Checksum verification failed for {filename}. File may be corrupted."
-                    self.status_label.config(text=error_message)
-                    messagebox.showerror("Download Error", error_message)
-                    if os.path.exists(temp_path):
-                        os.remove(temp_path)
-                    clear_download_state()
+                        if is_downloading:
+                            self.client_socket.send(b"CONTINUE")
+                        else:
+                            self.client_socket.send(b"PAUSE")
+                            break
+                    
+                    if not is_downloading:
+                        self.status_label.config(text=f"Download of {filename} paused")
+                        return
+                    
+                    # Verify checksum
+                    self.status_label.config(text="Verifying file integrity...")
+                    actual_checksum = calculate_checksum(temp_path)
+                    
+                    if actual_checksum == expected_checksum:
+                        os.rename(temp_path, save_path)
+                        self.status_label.config(text=f"Downloaded {filename} successfully (checksum verified)")
+                        messagebox.showinfo("Download Complete", f"Downloaded {filename} successfully")
+                        log_message(f"Downloaded {filename} successfully (checksum verified)")
+                        clear_download_state()
+                    else:
+                        error_message = f"Checksum verification failed for {filename}. File may be corrupted."
+                        self.status_label.config(text=error_message)
+                        messagebox.showerror("Download Error", error_message)
+                        log_message(error_message)
+                        if os.path.exists(temp_path):
+                            os.remove(temp_path)
+                        log_message(f"Deleted corrupted file: {filename}")
+                        clear_download_state()
             
             # Reset download state
             is_downloading = False
-            download_paused = False
             self.pause_button.config(state=tk.DISABLED)
             self.resume_button.config(state=tk.DISABLED)
         
@@ -687,135 +699,45 @@ class MainWindow(tk.Toplevel):
             messagebox.showerror("Download Error", error_message)
             log_message(error_message)
             is_downloading = False
-            download_paused = False
             self.pause_button.config(state=tk.DISABLED)
             self.resume_button.config(state=tk.DISABLED)
     
     def pause_transfer(self):
         """Pause the current download"""
-        global is_downloading, download_paused
+        global is_downloading
         
-        if is_downloading and not download_paused:
-            download_paused = True
-            self.client_socket.send(b"PAUSE")
+        if is_downloading:
+            is_downloading = False
             self.status_label.config(text="Pausing download...")
             self.pause_button.config(state=tk.DISABLED)
             self.resume_button.config(state=tk.NORMAL)
-            log_message("Download paused by user")
     
     def resume_transfer(self):
         """Resume the paused download"""
-        global is_downloading, download_paused
+        global is_downloading
         
         state = load_download_state()
         if state:
             is_downloading = True
-            download_paused = False
             self.pause_button.config(state=tk.NORMAL)
             self.resume_button.config(state=tk.DISABLED)
             
             # Update progress bar to current state
             if state["total_size"] > 0:
                 progress = int((state["offset"] / state["total_size"]) * 100)
-                self.progress_var.set(progress)
-                self.progress_label.config(text=f"{progress}%")
+                self.after(0, self.update_progress_bar, progress)
             
-            self.status_label.config(text=f"Resuming download of {state['filename']}...")
-            log_message(f"Resuming download of {state['filename']} from offset {state['offset']}")
-            
-            # Start download in a thread
-            self.download_thread = threading.Thread(
-                target=self._download_thread, 
-                args=(state["filename"], state["save_path"], True), 
-                daemon=True
-            )
-            self.download_thread.start()
+            try:
+                log_message("Resuming download...")
+                threading.Thread(target=self._download_thread, 
+                                args=(state["filename"], state["save_path"], True), 
+                                daemon=True).start()
+            except Exception as e:
+                self.status_label.config(text=f"Resume error: {str(e)}")
+                is_downloading = False
+                self.pause_button.config(state=tk.DISABLED)
         else:
             messagebox.showinfo("No Download", "No paused download to resume")
-    
-    def delete_file(self):
-        """Delete a file from the server (admin only)"""
-        if self.role != "admin":
-            messagebox.showerror("Error", "Only admin users can delete files")
-            return
-        
-        # Check if a file is selected
-        selected = self.files_listbox.curselection()
-        if not selected:
-            messagebox.showinfo("Select File", "Please select a file to delete")
-            return
-        
-        # Get filename
-        filename_text = self.files_listbox.get(selected[0])
-        if '. ' in filename_text:  # Format: "1. filename"
-            filename = filename_text.split('. ', 1)[1].strip()
-        elif ' | ' in filename_text:  # Format: "filename | size | date"
-            filename = filename_text.split(' | ')[0].strip()
-        else:
-            filename = filename_text.strip()
-        
-        # Confirm deletion
-        if not messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete {filename}?"):
-            return
-        
-        try:
-            self.client_socket.send(f"DELETE {filename}".encode())
-            response = self.client_socket.recv(1024).decode()
-            
-            self.status_label.config(text=response)
-            messagebox.showinfo("Delete Result", response)
-            log_message(f"Delete response: {response}")
-            
-            # Refresh file list
-            self.refresh_files()
-        
-        except Exception as e:
-            error_message = f"Delete error: {str(e)}"
-            self.status_label.config(text=error_message)
-            messagebox.showerror("Delete Error", error_message)
-            log_message(error_message)
-    
-    def view_logs(self):
-        """View server logs (admin only)"""
-        if self.role != "admin":
-            messagebox.showerror("Error", "Only admin users can view logs")
-            return
-        
-        try:
-            self.client_socket.send("VIEW_LOGS".encode())
-            response = self.client_socket.recv(1024).decode()
-            
-            if response.startswith("AUTHORIZED"):
-                self.logs_text.delete(1.0, tk.END)  # Clear previous logs
-                self.client_socket.send("START".encode())
-                
-                # Show logs window
-                self.logs_frame.deiconify()
-                self.logs_frame.lift()
-                
-                # Receive and display logs
-                log_data = ""
-                while True:
-                    chunk = self.client_socket.recv(1024)
-                    if not chunk:
-                        break
-                    log_data += chunk.decode()
-                    self.logs_text.delete(1.0, tk.END)
-                    self.logs_text.insert(tk.END, log_data)
-                    self.logs_text.see(tk.END)  # Scroll to end
-                    self.update_idletasks()
-                
-                self.status_label.config(text="Logs viewed successfully")
-                log_message("Logs viewed successfully")
-            else:
-                messagebox.showerror("Unauthorized", "You are not authorized to view logs")
-                log_message("Unauthorized view logs attempt")
-        
-        except Exception as e:
-            error_message = f"Error viewing logs: {str(e)}"
-            self.status_label.config(text=error_message)
-            messagebox.showerror("View Logs Error", error_message)
-            log_message(error_message)
     
     def logout(self):
         """Logout and close the window"""
