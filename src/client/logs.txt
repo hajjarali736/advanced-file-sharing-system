@@ -188,3 +188,66 @@
 2025-04-27 19:18:48,026 - Delete response: SUCCESS: Deleted test.txt
 2025-04-27 19:18:53,416 - Sent EXIT command
 2025-04-27 19:18:53,416 - Connection closed
+2025-04-27 20:22:23,796 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:22:29,670 - Login failed
+2025-04-27 20:23:05,653 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:23:11,148 - Login failed
+2025-04-27 20:23:35,142 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:23:42,328 - Login failed
+2025-04-27 20:25:01,087 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:25:06,579 - Login successful with role: admin
+2025-04-27 20:25:06,579 - Admin privileges granted
+2025-04-27 20:26:03,563 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:26:08,187 - Login successful with role: admin
+2025-04-27 20:26:08,187 - Admin privileges granted
+2025-04-27 20:26:19,128 - Unauthorized view logs attemnpt
+2025-04-27 20:27:34,477 - Unauthorized view logs attemnpt
+2025-04-27 20:27:39,735 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:27:45,826 - Login successful with role: admin
+2025-04-27 20:27:45,826 - Admin privileges granted
+2025-04-27 20:27:51,934 - Unauthorized view logs attemnpt
+2025-04-27 20:28:30,642 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:28:53,898 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:28:59,196 - Login successful with role: admin
+2025-04-27 20:28:59,196 - Admin privileges granted
+2025-04-27 20:29:04,712 - Unauthorized view logs attemnpt
+2025-04-27 20:29:50,707 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:29:57,342 - Login successful with role: admin
+2025-04-27 20:29:57,342 - Admin privileges granted
+2025-04-27 20:30:02,022 - Error downloading logs: 'bytes' object has no attribute 'encode'
+2025-04-27 20:30:19,521 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:30:24,243 - Login failed
+2025-04-27 20:30:27,783 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:30:33,107 - Login successful with role: admin
+2025-04-27 20:30:33,107 - Admin privileges granted
+2025-04-27 20:30:37,439 - Unauthorized view logs attemnpt
+2025-04-27 20:30:50,713 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:30:55,053 - Login successful with role: admin
+2025-04-27 20:30:55,053 - Admin privileges granted
+2025-04-27 20:30:58,472 - Unauthorized view logs attemnpt
+2025-04-27 20:36:10,841 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:36:15,561 - Login successful with role: admin
+2025-04-27 20:36:15,561 - Admin privileges granted
+2025-04-27 20:36:20,250 - Unauthorized view logs attemnpt
+2025-04-27 20:42:09,353 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:42:14,110 - Login successful with role: admin
+2025-04-27 20:42:14,110 - Admin privileges granted
+2025-04-27 20:42:17,788 - Unauthorized view logs attemnpt
+2025-04-27 20:52:45,640 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:52:49,797 - Login successful with role: admin
+2025-04-27 20:52:49,797 - Admin privileges granted
+2025-04-27 20:52:52,806 - Error downloading logs: a bytes-like object is required, not 'str'
+2025-04-27 20:53:29,995 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:53:33,642 - Login successful with role: admin
+2025-04-27 20:53:33,642 - Admin privileges granted
+2025-04-27 20:56:09,407 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 20:56:13,811 - Login successful with role: admin
+2025-04-27 20:56:13,812 - Admin privileges granted
+2025-04-27 21:01:26,264 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 21:01:29,924 - Login successful with role: admin
+2025-04-27 21:01:29,924 - Admin privileges granted
+2025-04-27 21:03:33,087 - Error downloading logs: [WinError 10054] An existing connection was forcibly closed by the remote host
+2025-04-27 21:03:40,519 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 21:03:44,658 - Login successful with role: admin
+2025-04-27 21:03:44,659 - Admin privileges granted
+2025-04-27 21:03:49,362 - Logs viewed successfully.

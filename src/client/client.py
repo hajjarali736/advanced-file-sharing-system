@@ -104,6 +104,9 @@ def clear_download_state():
     download_state = None
     log_message("Cleared download state")
 
+
+
+
 def download_file(filename, clientSocket, resume=False):
     # Ensure the file path is relative to the directory of client.py
     file_path = os.path.join(os.path.dirname(__file__), filename)
@@ -243,6 +246,31 @@ def login(username, password, client_socket):
         return False, None
 
 
+def view_logs(client_socket):
+    try:
+        client_socket.send(f"VIEW_LOGS".encode())
+        response = client_socket.recv(1024).decode()
+        print("the server: " + response)
+        if response.startswith("AUTHORIZED"):
+            print("Authorized to view logs")
+            client_socket.send("START".encode())    
+
+            while True:
+                chunk = client_socket.recv(1024)
+                if not chunk:
+                    break
+                print(chunk.decode(),end="")
+            print("\nLogs printed successfully.")
+            log_message("Logs viewed successfully.")
+
+        else:
+            print("Unauthorized view logs attemnpt")
+            log_message("Unauthorized view logs attemnpt")
+            return
+    except Exception as e:
+        print(f"Error downloading logs: {str(e)}") 
+        log_message(f"Error downloading logs: {str(e)}")
+
 def main():
     clientSocket = socket(AF_INET, SOCK_STREAM)
     clientSocket.connect((serverName, serverPort))#connects to the server
@@ -272,7 +300,7 @@ def main():
             print("Registration successful!")
             log_message("Registration successful")
             if role == "admin":
-                print("As an admin, you can also use: DELETE <filename>")
+                print("As an admin, you can also use: DELETE <filename>, VIEW_LOGS")
                 log_message("Admin privileges granted")
 
     elif choice == "L":
@@ -291,7 +319,7 @@ def main():
             print("Login successful!")
             log_message(f"Login successful with role: {role}")
             if role == "admin":
-                print("As an admin, you can also use: DELETE <filename>")
+                print("As an admin, you can also use: DELETE <filename>, VIEW_LOGS")
                 log_message("Admin privileges granted")
         
 
@@ -344,6 +372,9 @@ def main():
                 response=clientSocket.recv(1024).decode()
                 print(response)
                 log_message(f"Delete response: {response}")
+
+        elif command.startswith("VIEW_LOGS"):
+            view_logs(clientSocket)
 
         else:
             error_message = "Invalid command. Format:"

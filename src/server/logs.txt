@@ -1,219 +1,123 @@
-2025-04-27 13:32:41,159 - ('127.0.0.1', 55371) sent login attempt: LOGIN user userpass
-2025-04-27 13:32:41,160 - ('127.0.0.1', 55371) authenticated as user(user)
-2025-04-27 13:32:41,160 - Connection with ('127.0.0.1', 55371) established
-2025-04-27 13:32:52,864 - ('127.0.0.1', 55371) issued the command DOWNLOAD test.txt
-2025-04-27 13:32:52,871 - File size: 11 and checksum: 1101 sent to ('127.0.0.1', 55371)
-2025-04-27 13:32:52,871 - Client ('127.0.0.1', 55371) is ready. Starting file transfer from offset 0.
-2025-04-27 13:32:52,871 - Sent chunk 0 to ('127.0.0.1', 55371). Progress: 100.00%
-2025-04-27 13:32:57,688 - Download paused by('127.0.0.1', 55371). Waiting up to 30 seconds to resume..
-2025-04-27 13:33:16,927 - Client ('127.0.0.1', 55371) requested to continue download after chunk 1.
-2025-04-27 13:33:16,928 - SUCCESS: File test.txt successfully sent to ('127.0.0.1', 55371)
-2025-04-27 13:33:46,936 - Closing connection with ('127.0.0.1', 55371)
-2025-04-27 13:43:43,544 - ('127.0.0.1', 55450) sent login attempt: LOGIN user userpass
-2025-04-27 13:43:43,545 - ('127.0.0.1', 55450) authenticated as user(user)
-2025-04-27 13:43:43,545 - Connection with ('127.0.0.1', 55450) established
-2025-04-27 13:43:49,048 - ('127.0.0.1', 55450) issued the command DOWNLOAD test.txt
-2025-04-27 13:43:49,049 - File size: 11 and checksum: 1101 sent to ('127.0.0.1', 55450)
-2025-04-27 13:43:49,049 - Client ('127.0.0.1', 55450) is ready. Starting file transfer from offset 0.
-2025-04-27 13:43:49,050 - Sent chunk 0 to ('127.0.0.1', 55450). Progress: 100.00%
-2025-04-27 13:43:52,264 - Client ('127.0.0.1', 55450) requested to continue download after chunk 1.
-2025-04-27 13:43:52,264 - SUCCESS: File test.txt successfully sent to ('127.0.0.1', 55450)
-2025-04-27 13:44:08,216 - ('127.0.0.1', 55450) issued the command DOWNLOAD test.txt
-2025-04-27 13:44:08,217 - File size: 11 and checksum: 1101 sent to ('127.0.0.1', 55450)
-2025-04-27 13:44:08,217 - Client ('127.0.0.1', 55450) is ready. Starting file transfer from offset 0.
-2025-04-27 13:44:08,218 - Sent chunk 0 to ('127.0.0.1', 55450). Progress: 100.00%
-2025-04-27 13:44:11,552 - Client ('127.0.0.1', 55450) requested to continue download after chunk 1.
-2025-04-27 13:44:11,553 - SUCCESS: File test.txt successfully sent to ('127.0.0.1', 55450)
-2025-04-27 13:44:25,592 - ('127.0.0.1', 55450) issued the command EXIT
-2025-04-27 13:44:25,592 - Closing connection with ('127.0.0.1', 55450)
-2025-04-27 13:49:05,640 - ('127.0.0.1', 55493) sent login attempt: LOGIN user userpass
-2025-04-27 13:49:05,641 - ('127.0.0.1', 55493) authenticated as user(user)
-2025-04-27 13:49:05,641 - Connection with ('127.0.0.1', 55493) established
-2025-04-27 13:49:15,249 - ('127.0.0.1', 55493) issued the command UPLOAD randomFile.txt 25 2405
-2025-04-27 13:49:15,251 - SUCCESS: File received as randomFile(1).txt from ('127.0.0.1', 55493) (checksum verified)
-2025-04-27 13:49:30,825 - ('127.0.0.1', 55493) issued the command DOWNLOAD randomFile(1).txt
-2025-04-27 13:49:30,825 - ERROR: ('127.0.0.1', 55493) requested non-existent file randomFile(1).txt
-2025-04-27 13:49:30,825 - Closing connection with ('127.0.0.1', 55493)
-2025-04-27 13:50:58,016 - ('127.0.0.1', 55513) sent login attempt: LOGIN user userpass
-2025-04-27 13:50:58,017 - ('127.0.0.1', 55513) authenticated as user(user)
-2025-04-27 13:50:58,017 - Connection with ('127.0.0.1', 55513) established
-2025-04-27 13:51:13,257 - ('127.0.0.1', 55513) issued the command LIST
-2025-04-27 13:51:13,258 - File list successfully sent to ('127.0.0.1', 55513)
-2025-04-27 13:51:33,410 - ('127.0.0.1', 55513) issued the command UPLOAD randomFile.txt 25 2405
-2025-04-27 13:51:33,412 - SUCCESS: File received as randomFile(1).txt from ('127.0.0.1', 55513) (checksum verified)
-2025-04-27 13:51:40,953 - ('127.0.0.1', 55513) issued the command LIST
-2025-04-27 13:51:40,953 - File list successfully sent to ('127.0.0.1', 55513)
-2025-04-27 13:51:50,289 - ('127.0.0.1', 55513) issued the command UPLOAD randomFile.txt 25 2405
-2025-04-27 13:51:50,291 - SUCCESS: File received as randomFile(2).txt from ('127.0.0.1', 55513) (checksum verified)
-2025-04-27 13:51:54,593 - ('127.0.0.1', 55513) issued the command LIST
-2025-04-27 13:51:54,593 - File list successfully sent to ('127.0.0.1', 55513)
-2025-04-27 13:52:00,217 - ('127.0.0.1', 55513) issued the command EXIT
-2025-04-27 13:52:00,217 - Closing connection with ('127.0.0.1', 55513)
-2025-04-27 14:03:31,257 - ('127.0.0.1', 55620) sent login attempt: LOGIN user userpass
-2025-04-27 14:03:31,258 - ('127.0.0.1', 55620) authenticated as user(user)
-2025-04-27 14:03:31,258 - Connection with ('127.0.0.1', 55620) established
-2025-04-27 14:03:41,042 - ('127.0.0.1', 55620) issued the command DOWNLOAD test.txt
-2025-04-27 14:03:41,043 - File size: 11 and checksum: 1101 sent to ('127.0.0.1', 55620)
-2025-04-27 14:03:41,043 - Client ('127.0.0.1', 55620) is ready. Starting file transfer from offset 0.
-2025-04-27 14:03:41,044 - Sent chunk 0 to ('127.0.0.1', 55620). Progress: 100.00%
-2025-04-27 14:03:48,274 - Client ('127.0.0.1', 55620) requested to continue download after chunk 1.
-2025-04-27 14:03:48,274 - SUCCESS: File test.txt successfully sent to ('127.0.0.1', 55620)
-2025-04-27 14:04:02,106 - ('127.0.0.1', 55620) issued the command EXIT
-2025-04-27 14:04:02,106 - Closing connection with ('127.0.0.1', 55620)
-2025-04-27 14:04:44,873 - ('127.0.0.1', 55628) sent login attempt: LOGIN user userpass
-2025-04-27 14:04:44,874 - ('127.0.0.1', 55628) authenticated as user(user)
-2025-04-27 14:04:44,874 - Connection with ('127.0.0.1', 55628) established
-2025-04-27 14:04:47,305 - ('127.0.0.1', 55628) issued the command LIST
-2025-04-27 14:04:47,306 - File list successfully sent to ('127.0.0.1', 55628)
-2025-04-27 14:05:03,178 - ('127.0.0.1', 55628) issued the command DOWNLOAD someTestFile.docx
-2025-04-27 14:05:03,191 - File size: 107 and checksum: 10476 sent to ('127.0.0.1', 55628)
-2025-04-27 14:05:03,191 - Client ('127.0.0.1', 55628) is ready. Starting file transfer from offset 0.
-2025-04-27 14:05:03,192 - Sent chunk 0 to ('127.0.0.1', 55628). Progress: 100.00%
-2025-04-27 14:05:11,258 - Client ('127.0.0.1', 55628) requested to continue download after chunk 1.
-2025-04-27 14:05:11,258 - SUCCESS: File someTestFile.docx successfully sent to ('127.0.0.1', 55628)
-2025-04-27 14:05:24,209 - ('127.0.0.1', 55628) issued the command LIST
-2025-04-27 14:05:24,210 - File list successfully sent to ('127.0.0.1', 55628)
-2025-04-27 14:05:27,579 - ('127.0.0.1', 55628) issued the command EXIT
-2025-04-27 14:05:27,579 - Closing connection with ('127.0.0.1', 55628)
-2025-04-27 14:09:53,042 - ('127.0.0.1', 55689) sent login attempt: LOGIN user userpass
-2025-04-27 14:09:53,042 - ('127.0.0.1', 55689) authenticated as user(user)
-2025-04-27 14:09:53,043 - Connection with ('127.0.0.1', 55689) established
-2025-04-27 14:10:06,915 - ('127.0.0.1', 55689) issued the command DOWNLOAD someTestFile.docx
-2025-04-27 14:10:06,916 - File size: 4796 and checksum: 3204 sent to ('127.0.0.1', 55689)
-2025-04-27 14:10:09,928 - ERROR: ('127.0.0.1', 55689) timed out waiting for start signal
-2025-04-27 14:10:09,928 - Closing connection with ('127.0.0.1', 55689)
-2025-04-27 14:13:43,218 - ('127.0.0.1', 55746) sent login attempt: LOGIN user userpass
-2025-04-27 14:13:43,218 - ('127.0.0.1', 55746) authenticated as user(user)
-2025-04-27 14:13:43,219 - Connection with ('127.0.0.1', 55746) established
-2025-04-27 14:13:57,618 - ('127.0.0.1', 55746) issued the command DOWNLOAD someTestFile.docx
-2025-04-27 14:13:57,619 - File size: 4796 and checksum: 3204 sent to ('127.0.0.1', 55746)
-2025-04-27 14:13:57,619 - Client ('127.0.0.1', 55746) is ready. Starting file transfer from offset 0.
-2025-04-27 14:13:57,619 - Sent chunk 0 to ('127.0.0.1', 55746). Progress: 21.35%
-2025-04-27 14:14:03,739 - Download paused by('127.0.0.1', 55746). Waiting up to 30 seconds to resume..
-2025-04-27 14:14:12,739 - Client ('127.0.0.1', 55746) requested to continue download after chunk 1.
-2025-04-27 14:14:12,739 - Sent chunk 1 to ('127.0.0.1', 55746). Progress: 42.70%
-2025-04-27 14:14:16,850 - Client ('127.0.0.1', 55746) requested to continue download after chunk 2.
-2025-04-27 14:14:16,851 - Sent chunk 2 to ('127.0.0.1', 55746). Progress: 64.05%
-2025-04-27 14:14:25,810 - Client ('127.0.0.1', 55746) requested to continue download after chunk 3.
-2025-04-27 14:14:25,810 - Sent chunk 3 to ('127.0.0.1', 55746). Progress: 85.40%
-2025-04-27 14:14:31,370 - Client ('127.0.0.1', 55746) requested to continue download after chunk 4.
-2025-04-27 14:14:31,370 - Sent chunk 4 to ('127.0.0.1', 55746). Progress: 100.00%
-2025-04-27 14:14:38,106 - Client ('127.0.0.1', 55746) requested to continue download after chunk 5.
-2025-04-27 14:14:38,107 - SUCCESS: File someTestFile.docx successfully sent to ('127.0.0.1', 55746)
-2025-04-27 14:14:45,355 - ('127.0.0.1', 55746) issued the command EXIT
-2025-04-27 14:14:45,356 - Closing connection with ('127.0.0.1', 55746)
-2025-04-27 14:21:00,963 - ('127.0.0.1', 55812) sent login attempt: LOGIN user userpass
-2025-04-27 14:21:00,963 - ('127.0.0.1', 55812) authenticated as user(user)
-2025-04-27 14:21:00,963 - Connection with ('127.0.0.1', 55812) established
-2025-04-27 14:21:11,899 - ('127.0.0.1', 55812) issued the command DOWNLOAD someTestFile.docx
-2025-04-27 14:21:11,900 - File size: 4796 and checksum: 3204 sent to ('127.0.0.1', 55812)
-2025-04-27 14:21:11,901 - Client ('127.0.0.1', 55812) is ready. Starting file transfer from offset 0.
-2025-04-27 14:21:11,901 - Sent chunk 0 to ('127.0.0.1', 55812). Progress: 21.35%
-2025-04-27 14:21:17,619 - Client ('127.0.0.1', 55812) requested to continue download after chunk 1.
-2025-04-27 14:21:17,619 - Sent chunk 1 to ('127.0.0.1', 55812). Progress: 42.70%
-2025-04-27 14:21:19,578 - Client ('127.0.0.1', 55812) requested to continue download after chunk 2.
-2025-04-27 14:21:19,579 - Sent chunk 2 to ('127.0.0.1', 55812). Progress: 64.05%
-2025-04-27 14:21:22,963 - Client ('127.0.0.1', 55812) requested to continue download after chunk 3.
-2025-04-27 14:21:22,963 - Sent chunk 3 to ('127.0.0.1', 55812). Progress: 85.40%
-2025-04-27 14:21:25,211 - Client ('127.0.0.1', 55812) requested to continue download after chunk 4.
-2025-04-27 14:21:25,211 - Sent chunk 4 to ('127.0.0.1', 55812). Progress: 100.00%
-2025-04-27 14:21:31,019 - Client ('127.0.0.1', 55812) requested to continue download after chunk 5.
-2025-04-27 14:21:31,019 - SUCCESS: File someTestFile.docx successfully sent to ('127.0.0.1', 55812)
-2025-04-27 14:21:37,995 - ('127.0.0.1', 55812) issued the command EXIT
-2025-04-27 14:21:37,995 - Closing connection with ('127.0.0.1', 55812)
-2025-04-27 14:25:56,818 - ('127.0.0.1', 55850) sent login attempt: LOGIN user userpass
-2025-04-27 14:25:56,819 - ('127.0.0.1', 55850) authenticated as user(user)
-2025-04-27 14:25:56,819 - Connection with ('127.0.0.1', 55850) established
-2025-04-27 14:25:59,883 - ('127.0.0.1', 55850) issued the command LIST
-2025-04-27 14:25:59,884 - File list successfully sent to ('127.0.0.1', 55850)
-2025-04-27 14:26:08,300 - ('127.0.0.1', 55850) issued the command DOWNLOAD testing.md
-2025-04-27 14:26:08,300 - File size: 1562 and checksum: 24929 sent to ('127.0.0.1', 55850)
-2025-04-27 14:26:08,301 - Client ('127.0.0.1', 55850) is ready. Starting file transfer from offset 0.
-2025-04-27 14:26:08,301 - Sent chunk 0 to ('127.0.0.1', 55850). Progress: 65.56%
-2025-04-27 14:26:13,499 - Client ('127.0.0.1', 55850) requested to continue download after chunk 1.
-2025-04-27 14:26:13,500 - Sent chunk 1 to ('127.0.0.1', 55850). Progress: 100.00%
-2025-04-27 14:26:19,796 - Client ('127.0.0.1', 55850) requested to continue download after chunk 2.
-2025-04-27 14:26:19,796 - SUCCESS: File testing.md successfully sent to ('127.0.0.1', 55850)
-2025-04-27 14:26:25,956 - ('127.0.0.1', 55850) issued the command EXIT
-2025-04-27 14:26:25,956 - Closing connection with ('127.0.0.1', 55850)
-2025-04-27 17:51:57,901 - Connection with ('127.0.0.1', 57930) established
-2025-04-27 17:52:08,707 - ('127.0.0.1', 57930) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 17:52:08,708 - Closing connection with ('127.0.0.1', 57930)
-2025-04-27 17:53:39,479 - Connection with ('127.0.0.1', 57945) established
-2025-04-27 17:53:49,282 - ('127.0.0.1', 57945) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 17:53:49,283 - Closing connection with ('127.0.0.1', 57945)
-2025-04-27 18:00:30,452 - Connection with ('127.0.0.1', 57988) established
-2025-04-27 18:00:41,139 - ('127.0.0.1', 57988) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 18:00:41,141 - Closing connection with ('127.0.0.1', 57988)
-2025-04-27 18:22:20,368 - Connection with ('127.0.0.1', 50127) established
-2025-04-27 18:22:33,973 - ('127.0.0.1', 50127) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 18:22:33,976 - ('127.0.0.1', 50127) authenticated as Admin successfully
-2025-04-27 18:22:42,293 - ('127.0.0.1', 50127) issued the command LIST
-2025-04-27 18:22:42,293 - File list successfully sent to ('127.0.0.1', 50127)
-2025-04-27 18:22:58,822 - ('127.0.0.1', 50127) issued the command DOWNLOAD test.txt
-2025-04-27 18:22:58,822 - File size: 11 and checksum: 1101 sent to ('127.0.0.1', 50127)
-2025-04-27 18:22:58,823 - Client ('127.0.0.1', 50127) is ready. Starting file transfer from offset 0.
-2025-04-27 18:22:58,823 - Sent chunk 0 to ('127.0.0.1', 50127). Progress: 100.00%
-2025-04-27 18:23:05,124 - Client ('127.0.0.1', 50127) requested to continue download after chunk 1.
-2025-04-27 18:23:05,125 - SUCCESS: File test.txt successfully sent to ('127.0.0.1', 50127)
-2025-04-27 18:23:25,437 - ('127.0.0.1', 50127) issued the command UPLOAD test.txt 11 1101
-2025-04-27 18:23:25,439 - SUCCESS: File received as test(1).txt from ('127.0.0.1', 50127) (checksum verified)
-2025-04-27 18:23:40,597 - ('127.0.0.1', 50127) issued the command UPLOAD test.txt 11 1101 -o
-2025-04-27 18:23:40,599 - SUCCESS: File received as test.txt from ('127.0.0.1', 50127) (checksum verified)
-2025-04-27 18:24:06,405 - ('127.0.0.1', 50127) issued the command DELETE test(1).txt
-2025-04-27 18:24:10,517 - ('127.0.0.1', 50127) issued the command EXIT
-2025-04-27 18:24:10,517 - Closing connection with ('127.0.0.1', 50127)
-2025-04-27 18:29:58,412 - Connection with ('127.0.0.1', 50198) established
-2025-04-27 18:30:17,173 - ('127.0.0.1', 50198) sent login attempt: LOGIN Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
-2025-04-27 18:30:17,175 - ('127.0.0.1', 50198) failed login: User Michael does not exist
-2025-04-27 18:30:17,175 - Closing connection with ('127.0.0.1', 50198)
-2025-04-27 18:30:22,929 - Connection with ('127.0.0.1', 50199) established
-2025-04-27 18:30:31,365 - ('127.0.0.1', 50199) sent registration attempt: REGISTER Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
-2025-04-27 18:30:31,379 - ('127.0.0.1', 50199) registered as Michael with role User
-2025-04-27 18:30:31,386 - ('127.0.0.1', 50199) issued the command 
-2025-04-27 18:30:31,387 - Closing connection with ('127.0.0.1', 50199)
-2025-04-27 18:32:36,025 - Connection with ('127.0.0.1', 50218) established
-2025-04-27 18:32:47,173 - ('127.0.0.1', 50218) sent registration attempt: REGISTER Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
-2025-04-27 18:32:47,186 - ('127.0.0.1', 50218) registered as Michael with role User
-2025-04-27 18:32:52,309 - ('127.0.0.1', 50218) issued the command LIST
-2025-04-27 18:32:52,310 - File list successfully sent to ('127.0.0.1', 50218)
-2025-04-27 18:33:21,566 - ('127.0.0.1', 50218) issued the command DOWNLOAD testing.md
-2025-04-27 18:33:21,567 - File size: 1562 and checksum: 24929 sent to ('127.0.0.1', 50218)
-2025-04-27 18:33:21,567 - Client ('127.0.0.1', 50218) is ready. Starting file transfer from offset 0.
-2025-04-27 18:33:21,568 - Sent chunk 0 to ('127.0.0.1', 50218). Progress: 65.56%
-2025-04-27 18:33:25,766 - Client ('127.0.0.1', 50218) requested to continue download after chunk 1.
-2025-04-27 18:33:25,766 - Sent chunk 1 to ('127.0.0.1', 50218). Progress: 100.00%
-2025-04-27 18:33:30,374 - Client ('127.0.0.1', 50218) requested to continue download after chunk 2.
-2025-04-27 18:33:30,374 - SUCCESS: File testing.md successfully sent to ('127.0.0.1', 50218)
-2025-04-27 18:33:35,974 - ('127.0.0.1', 50218) issued the command EXIT
-2025-04-27 18:33:35,974 - Closing connection with ('127.0.0.1', 50218)
-2025-04-27 18:33:42,415 - Connection with ('127.0.0.1', 50222) established
-2025-04-27 18:33:51,622 - ('127.0.0.1', 50222) sent login attempt: LOGIN Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
-2025-04-27 18:33:51,625 - ('127.0.0.1', 50222) authenticated as Michael successfully
-2025-04-27 18:33:55,509 - ('127.0.0.1', 50222) issued the command LIST
-2025-04-27 18:33:55,510 - File list successfully sent to ('127.0.0.1', 50222)
-2025-04-27 18:34:07,583 - ('127.0.0.1', 50222) issued the command UPLOAD testing.md 1562 24929
-2025-04-27 18:34:07,585 - SUCCESS: File received as testing(1).md from ('127.0.0.1', 50222) (checksum verified)
-2025-04-27 18:34:13,270 - ('127.0.0.1', 50222) issued the command EXIT
-2025-04-27 18:34:13,270 - Closing connection with ('127.0.0.1', 50222)
-2025-04-27 19:04:20,110 - Connection with ('127.0.0.1', 50446) established
-2025-04-27 19:04:32,591 - ('127.0.0.1', 50446) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 19:04:32,593 - ('127.0.0.1', 50446) authenticated as Admin successfully
-2025-04-27 19:04:36,552 - ('127.0.0.1', 50446) issued the command LIST
-2025-04-27 19:04:36,553 - File list successfully sent to ('127.0.0.1', 50446)
-2025-04-27 19:04:48,736 - ('127.0.0.1', 50446) issued the command DELETE test.txt
-2025-04-27 19:04:55,065 - ('127.0.0.1', 50446) issued the command EXIT
-2025-04-27 19:04:55,065 - Closing connection with ('127.0.0.1', 50446)
-2025-04-27 19:14:03,365 - Connection with ('127.0.0.1', 50543) established
-2025-04-27 19:14:13,416 - ('127.0.0.1', 50543) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 19:14:13,418 - ('127.0.0.1', 50543) authenticated as Admin successfully
-2025-04-27 19:14:16,616 - ('127.0.0.1', 50543) issued the command LIST
-2025-04-27 19:14:16,617 - File list successfully sent to ('127.0.0.1', 50543)
-2025-04-27 19:14:24,656 - ('127.0.0.1', 50543) issued the command DELETE test.txt
-2025-04-27 19:18:29,906 - Connection with ('127.0.0.1', 50579) established
-2025-04-27 19:18:37,392 - ('127.0.0.1', 50579) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
 2025-04-27 19:18:37,394 - ('127.0.0.1', 50579) authenticated as Admin successfully
 2025-04-27 19:18:48,025 - ('127.0.0.1', 50579) issued the command DELETE test.txt
 2025-04-27 19:18:48,026 - Admin Admin deleted file test.txt
 2025-04-27 19:18:53,416 - ('127.0.0.1', 50579) issued the command EXIT
 2025-04-27 19:18:53,417 - Closing connection with ('127.0.0.1', 50579)
+2025-04-27 20:22:23,796 - Connection with ('127.0.0.1', 50746) established
+2025-04-27 20:22:29,654 - ('127.0.0.1', 50746) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:22:29,670 - ('127.0.0.1', 50746) failed login: User admin does not exist
+2025-04-27 20:22:29,670 - Closing connection with ('127.0.0.1', 50746)
+2025-04-27 20:23:05,653 - Connection with ('127.0.0.1', 50751) established
+2025-04-27 20:23:11,133 - ('127.0.0.1', 50751) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:23:11,146 - ('127.0.0.1', 50751) failed login: Invalid credentials for admin
+2025-04-27 20:23:11,146 - Closing connection with ('127.0.0.1', 50751)
+2025-04-27 20:23:35,142 - Connection with ('127.0.0.1', 50756) established
+2025-04-27 20:23:42,328 - ('127.0.0.1', 50756) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:23:42,328 - ('127.0.0.1', 50756) failed login: Invalid credentials for admin
+2025-04-27 20:23:42,328 - Closing connection with ('127.0.0.1', 50756)
+2025-04-27 20:25:01,087 - Connection with ('127.0.0.1', 50777) established
+2025-04-27 20:25:06,579 - ('127.0.0.1', 50777) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:25:06,579 - ('127.0.0.1', 50777) authenticated as admin successfully
+2025-04-27 20:25:15,465 - Closing connection with ('127.0.0.1', 50777)
+2025-04-27 20:26:03,563 - Connection with ('127.0.0.1', 50793) established
+2025-04-27 20:26:08,187 - ('127.0.0.1', 50793) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:26:08,187 - ('127.0.0.1', 50793) authenticated as admin successfully
+2025-04-27 20:26:19,128 - ('127.0.0.1', 50793) issued the command VIEW_LOGS
+2025-04-27 20:26:19,128 - Admin admin requested to view logs
+2025-04-27 20:26:19,128 - ERROR: File transfer with ('127.0.0.1', 50793) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:27:34,477 - ('127.0.0.1', 50793) issued the command VIEW_LOGS
+2025-04-27 20:27:34,477 - Admin admin requested to view logs
+2025-04-27 20:27:34,477 - ERROR: File transfer with ('127.0.0.1', 50793) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:27:37,615 - ('127.0.0.1', 50793) issued the command 
+2025-04-27 20:27:37,615 - Closing connection with ('127.0.0.1', 50793)
+2025-04-27 20:27:39,735 - Connection with ('127.0.0.1', 50810) established
+2025-04-27 20:27:45,826 - ('127.0.0.1', 50810) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:27:45,826 - ('127.0.0.1', 50810) authenticated as admin successfully
+2025-04-27 20:27:51,928 - ('127.0.0.1', 50810) issued the command VIEW_LOGS
+2025-04-27 20:27:51,928 - Admin admin requested to view logs
+2025-04-27 20:27:51,928 - ERROR: File transfer with ('127.0.0.1', 50810) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:28:27,189 - ('127.0.0.1', 50810) issued the command 
+2025-04-27 20:28:27,189 - Closing connection with ('127.0.0.1', 50810)
+2025-04-27 20:28:30,642 - Connection with ('127.0.0.1', 50822) established
+2025-04-27 20:28:47,844 - ('127.0.0.1', 50822) failed to login: No LOGIN command
+2025-04-27 20:28:47,844 - Closing connection with ('127.0.0.1', 50822)
+2025-04-27 20:28:53,898 - Connection with ('127.0.0.1', 50827) established
+2025-04-27 20:28:59,184 - ('127.0.0.1', 50827) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:28:59,196 - ('127.0.0.1', 50827) authenticated as admin successfully
+2025-04-27 20:29:04,712 - ('127.0.0.1', 50827) issued the command VIEW_LOGS
+2025-04-27 20:29:04,712 - Admin admin requested to view logs
+2025-04-27 20:29:04,712 - ERROR: File transfer with ('127.0.0.1', 50827) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:29:48,057 - ('127.0.0.1', 50827) issued the command 
+2025-04-27 20:29:48,057 - Closing connection with ('127.0.0.1', 50827)
+2025-04-27 20:29:50,707 - Connection with ('127.0.0.1', 50838) established
+2025-04-27 20:29:57,324 - ('127.0.0.1', 50838) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:29:57,342 - ('127.0.0.1', 50838) authenticated as admin successfully
+2025-04-27 20:30:16,741 - ('127.0.0.1', 50838) issued the command 
+2025-04-27 20:30:16,741 - Closing connection with ('127.0.0.1', 50838)
+2025-04-27 20:30:19,523 - Connection with ('127.0.0.1', 50840) established
+2025-04-27 20:30:24,228 - ('127.0.0.1', 50840) sent login attempt: LOGIN admin 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+2025-04-27 20:30:24,241 - ('127.0.0.1', 50840) failed login: Invalid credentials for admin
+2025-04-27 20:30:24,243 - Closing connection with ('127.0.0.1', 50840)
+2025-04-27 20:30:27,783 - Connection with ('127.0.0.1', 50842) established
+2025-04-27 20:30:33,091 - ('127.0.0.1', 50842) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:30:33,107 - ('127.0.0.1', 50842) authenticated as admin successfully
+2025-04-27 20:30:37,439 - ('127.0.0.1', 50842) issued the command VIEW_LOGS
+2025-04-27 20:30:37,439 - Admin admin requested to view logs
+2025-04-27 20:30:37,439 - ERROR: File transfer with ('127.0.0.1', 50842) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:30:48,370 - ('127.0.0.1', 50842) issued the command 
+2025-04-27 20:30:48,370 - Closing connection with ('127.0.0.1', 50842)
+2025-04-27 20:30:50,713 - Connection with ('127.0.0.1', 50843) established
+2025-04-27 20:30:55,053 - ('127.0.0.1', 50843) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:30:55,053 - ('127.0.0.1', 50843) authenticated as admin successfully
+2025-04-27 20:30:58,472 - ('127.0.0.1', 50843) issued the command VIEW_LOGS
+2025-04-27 20:30:58,472 - Admin admin requested to view logs
+2025-04-27 20:30:58,472 - ERROR: File transfer with ('127.0.0.1', 50843) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:36:09,281 - ('127.0.0.1', 50843) issued the command 
+2025-04-27 20:36:09,281 - Closing connection with ('127.0.0.1', 50843)
+2025-04-27 20:36:10,843 - Connection with ('127.0.0.1', 50913) established
+2025-04-27 20:36:15,557 - ('127.0.0.1', 50913) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:36:15,560 - ('127.0.0.1', 50913) authenticated as admin successfully
+2025-04-27 20:36:20,249 - ('127.0.0.1', 50913) issued the command VIEW_LOGS
+2025-04-27 20:36:20,250 - Admin admin requested to view logs
+2025-04-27 20:36:20,250 - ERROR: File transfer with ('127.0.0.1', 50913) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:42:09,354 - Connection with ('127.0.0.1', 50981) established
+2025-04-27 20:42:14,106 - ('127.0.0.1', 50981) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:42:14,110 - ('127.0.0.1', 50981) authenticated as admin successfully
+2025-04-27 20:42:17,785 - ('127.0.0.1', 50981) issued the command VIEW_LOGS
+2025-04-27 20:42:17,786 - Admin admin requested to view logs
+2025-04-27 20:42:17,787 - ERROR: File transfer with ('127.0.0.1', 50981) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:52:45,641 - Connection with ('127.0.0.1', 51183) established
+2025-04-27 20:52:49,794 - ('127.0.0.1', 51183) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:52:49,797 - ('127.0.0.1', 51183) authenticated as admin successfully
+2025-04-27 20:52:52,805 - ('127.0.0.1', 51183) issued the command VIEW_LOGS
+2025-04-27 20:52:52,805 - Admin admin requested to view logs
+2025-04-27 20:53:25,208 - ERROR: ('127.0.0.1', 51183) sent an invalid start signal
+2025-04-27 20:53:25,210 - Closing connection with ('127.0.0.1', 51183)
+2025-04-27 20:53:29,996 - Connection with ('127.0.0.1', 51189) established
+2025-04-27 20:53:33,639 - ('127.0.0.1', 51189) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:53:33,642 - ('127.0.0.1', 51189) authenticated as admin successfully
+2025-04-27 20:53:37,345 - ('127.0.0.1', 51189) issued the command VIEW_LOGS
+2025-04-27 20:53:37,345 - Admin admin requested to view logs
+2025-04-27 20:53:37,351 - ERROR: File transfer with ('127.0.0.1', 51189) failed: a bytes-like object is required, not 'str'
+2025-04-27 20:55:10,603 - Closing connection with ('127.0.0.1', 51189)
+2025-04-27 20:56:09,408 - Connection with ('127.0.0.1', 51220) established
+2025-04-27 20:56:13,805 - ('127.0.0.1', 51220) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 20:56:13,810 - ('127.0.0.1', 51220) authenticated as admin successfully
+2025-04-27 20:56:17,916 - ('127.0.0.1', 51220) issued the command VIEW_LOGS
+2025-04-27 20:56:17,917 - Admin admin requested to view logs
+2025-04-27 20:56:17,923 - ERROR: File transfer with ('127.0.0.1', 51220) failed: a bytes-like object is required, not 'str'
+2025-04-27 21:01:21,296 - Closing connection with ('127.0.0.1', 51220)
+2025-04-27 21:01:26,266 - Connection with ('127.0.0.1', 51359) established
+2025-04-27 21:01:29,921 - ('127.0.0.1', 51359) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 21:01:29,923 - ('127.0.0.1', 51359) authenticated as admin successfully
+2025-04-27 21:01:33,536 - ('127.0.0.1', 51359) issued the command VIEW_LOGS
+2025-04-27 21:01:33,536 - Admin admin requested to view logs
+2025-04-27 21:01:33,541 - ERROR: File transfer with ('127.0.0.1', 51359) failed: a bytes-like object is required, not 'str'
+2025-04-27 21:03:40,519 - Connection with ('127.0.0.1', 51464) established
+2025-04-27 21:03:44,655 - ('127.0.0.1', 51464) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 21:03:44,658 - ('127.0.0.1', 51464) authenticated as admin successfully
+2025-04-27 21:03:49,338 - ('127.0.0.1', 51464) issued the command VIEW_LOGS
+2025-04-27 21:03:49,338 - Admin admin requested to view logs
+2025-04-27 21:03:49,349 - Logs sent to admin
+2025-04-27 21:03:49,362 - Logs sent to ('127.0.0.1', 51464)
+2025-04-27 21:03:49,362 - Closing connection with ('127.0.0.1', 51464)

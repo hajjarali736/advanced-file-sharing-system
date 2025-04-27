@@ -394,6 +394,43 @@ def handle_client(client_socket, addr):
 
                 else:
                     client_socket.send("ERROR: File not found".encode())
+            
+            elif parts[0] == "VIEW_LOGS":
+                try: 
+                    if (role!="admin"):
+                        client_socket.send("ERROR: Only admin users can view logs".encode())
+                        log_message(f"Unauthorized view logs attemnpt by {username}from{addr}")
+                        return
+
+                    if (len(parts)!=1):
+                        client_socket.send("ERROR: VIEW_LOGS command requires no arguments".encode())
+                        return
+                    
+                    log_message(f"Admin {username} requested to view logs")
+
+                    file_path = "logs.txt"
+                    if (os.path.exists(file_path)):
+                        client_socket.send("AUTHORIZED".encode())
+                        start_signal = client_socket.recv(1024).decode()
+                        if start_signal == "START":
+                            with open(file_path, "rb") as f:
+                                chunk = f.read(1024)
+                                while chunk:
+                                    client_socket.sendall(chunk )
+                                    chunk = f.read(1024)
+                            log_message(f"Logs sent to {username}")
+                        else:
+                            client_socket.send("ERROR: Invalid start signal".encode())
+                            log_message(f"ERROR: {addr} sent an invalid start signal")
+                        with open(file_path, "rb") as f:
+                            client_socket.sendall(f.read())
+                            print("Logs sent to client")
+                            log_message(f"Logs sent to {addr}")
+                        return
+                except Exception as e:
+                    client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
+                    log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
+
 
             elif parts[0] == "EXIT":
                 return
@@ -426,6 +463,7 @@ initialize_db_from_file(sql_file_path)
 
 print("Server is listening for incoming connections...")
 create_table()
+register("admin", hash_password("adminpass"), role = "admin")
 while True:
     client_socket, addr = server_socket.accept()
     print(f"New connection from {addr}")
