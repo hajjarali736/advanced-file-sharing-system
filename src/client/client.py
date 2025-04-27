@@ -109,11 +109,19 @@ def clear_download_state():
 
 def download_file(filename, clientSocket, resume=False):
     # Ensure the file path is relative to the directory of client.py
+    temp_filename = f"{filename}.part"
     file_path = os.path.join(os.path.dirname(__file__), filename)
+    temp_path = os.path.join(os.path.dirname(__file__), temp_filename)
     try:
         if resume:
             print(f"resume command: DOWNLOAD {filename} resume")
+            if os.path.exists(temp_path):
+                offset = os.path.getsize(temp_path)
+            else:
+                print("no temp file found")
+                return
             clientSocket.send(f"DOWNLOAD {filename} resume".encode())
+            
         else:
             offset=0#Ranim: I added this to make sure that the offset is defined when not resuming
             #that is, without it, offset would only be defined in the "resume==True" branch
@@ -127,7 +135,10 @@ def download_file(filename, clientSocket, resume=False):
             parts = response.split()
             filesize = int(parts[1])
             expected_checksum = int(parts[2])
-            offset = int(parts[3]) if len(parts) >= 4 else 0 
+            server_offset = int(parts[3]) if len(parts) >= 4 else 0 
+            if server_offset != offset:
+                print(f"Server offset {server_offset} does not match local offset {offset}")
+                return
             log_message(f"File size received: {filesize} bytes, expected checksum: {expected_checksum}")
             
             if not resume:
@@ -138,7 +149,7 @@ def download_file(filename, clientSocket, resume=False):
             mode = "ab" if resume else "wb"
             #RANIM: im gonna implement the download logic here:
             received = offset
-            with open(file_path, mode) as f:
+            with open(temp_path, mode) as f:
                 received = offset if resume else 0
                 while received < filesize:
                     chunk = clientSocket.recv(1024)
@@ -193,8 +204,9 @@ def download_file(filename, clientSocket, resume=False):
 
             # Verify checksum after download
 
-            actual_checksum = calculate_checksum(file_path)
+            actual_checksum = calculate_checksum(temp_path)
             if actual_checksum == expected_checksum:
+                os.rename(temp_path, file_path)
                 success_message = f"Downloaded {filename} successfully (checksum verified)"
                 print(success_message)
                 log_message(success_message)
