@@ -129,45 +129,6 @@ def log_message(message):
 
 def handle_client(client_socket, addr):
     try:
-        ''' Ranim: Implementing the access control /login system'''
-        # valid_users={
-        #     "admin": {"password":"adminpass","role":"admin"},
-        #     "user":{"password": "userpass","role":"user"} 
-        # }
-        # authenticated=False
-        # username=None
-
-
-        # login_attempt = client_socket.recv(1024).decode().strip()
-        # log_message(f"{addr} sent login attempt: {login_attempt}")
-
-        # if not login_attempt.startswith("LOGIN "):
-        #     client_socket.send("ERROR: you must login first using LOGIN<username><password>".encode())
-        #     log_message(f"{addr} failed to login:No LOGIN command")
-        #     client_socket.close()
-        #     return
-        
-        # parts = login_attempt.split()
-        
-        # if (len(parts)!=3):
-        #     client_socket.send("ERROR:Invalid login format. Use LOGIN<username><password>".encode())
-        #     log_message(f"{addr} failed login:Invalid format")
-        #     client_socket.close()
-        #     return
-        
-        # username,password= parts[1],parts[2]
-
-        # if (username in valid_users and valid_users[username]["password"]==password):
-        #     authenticated=True
-        #     role=valid_users[username]["role"]
-        #     client_socket.send(f"LOGIN_SUCCESS {role}".encode())
-        #     log_message(f"{addr} authenticated as {username}({role})")
-        # else:
-        #     client_socket.send("LOGIN_FAILED".encode())
-        #     log_message(f"{addr} failed login with username {username}")
-        #     client_socket.close()
-        #     return
-
         '''
             The client sends 3 kinds of commands:
             1. UPLOAD <filename> <filesize> <checksum> <-o>: server receives file from client (programmed by Michael)
@@ -353,19 +314,7 @@ def handle_client(client_socket, addr):
 
                     counter = 0
                     total_sent = offset
-                    # with open(file_path, "rb") as f:
-                    #     f.seek(offset)  # seek to the requested offset
-                    #     # send file in chunks of 1024 bytes
-                    #     while True:
-                    #         chunk = f.read(1024)
-                    #         if not chunk:
-                    #             break
-                    #         #ensures that the full chunk is sent over the socket
-                    #         client_socket.sendall(chunk)
-                    #         total_sent += len(chunk)
-                    #         log_message(f"File chunk {counter} sent to {addr} - Progress: {total_sent / filesize * 100:.2f}%")
-                    #         counter += 1
-                    #Ranim: I removed this part so that i can implement the download control mechanism
+                    
                     #Ranim's code
                     with open(file_path,"rb") as f:
                         f.seek(offset)
@@ -407,44 +356,11 @@ def handle_client(client_socket, addr):
                                 log_message(f"Client {addr} requested to continue download after chunk {counter}.")
                                 continue
 
-                            '''if response=="CONTINUE":
-                                continue
-                            elif response=="PAUSE":
-                                log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
-
-                                client_socket.settimeout(30)
-                                try:
-                                    resume_signal=client_socket.recv(1024).decode().strip().upper()
-                                    if resume_signal=="CONTINUE":
-                                        log_message(f"Client{addr} resumed the download")
-                                        continue
-                                    elif resume_signal=="STOP":
-                                        log_message(f"Client{addr} stopped the download.")
-                                        break
-                                except socket.timeout:
-                                    log_message(f"No resume from {addr} after 30 seconds. Closing the connection.")
-                                    break
-
-                            elif response=="STOP":
-                                log_message(f"Client{addr} terminated the download.")
-                                break
-                            else:
-                                log_message(f"Unexpected response '{response}' from {addr}.Closing connection.")
-                                break'''
-                    
-                    
-
-
                     log_message(f"SUCCESS: File {filename} successfully sent to {addr}")
                 
                 except Exception as e:
                     client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
                     log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
-
-            #elif parts[0] == "PAUSE":
-            #    log_message(f"Client {addr} requested pause")
-            #    client_socket.send("PAUSE_ACK".encode('utf-8'))
-            #    return
 
             elif parts[0] == "LIST":
                 # send the client a list of files
@@ -466,7 +382,11 @@ def handle_client(client_socket, addr):
                     return 
                 
                 filename=parts[1]
-                file_path=os.path.join("files",filename)
+                # Get the absolute path to the "files" directory at the project root
+                file_path = os.path.join(os.path.dirname(__file__), "files", filename)
+
+                print(f"Attempting to delete file: {file_path}")
+
                 if (os.path.exists(file_path)):
                     os.remove(file_path)
                     client_socket.send(f"SUCCESS: Deleted {filename}".encode())
@@ -503,8 +423,6 @@ server_socket.listen(5)
 
 sql_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'files', 'Database.sql')
 initialize_db_from_file(sql_file_path)
-
-# register("admin","adminpass",role="admin")
 
 print("Server is listening for incoming connections...")
 create_table()

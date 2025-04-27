@@ -206,7 +206,7 @@ def download_file(filename, clientSocket, resume=False):
                 error_message = f"Checksum verification failed for {filename}. File may be corrupted."
                 print(error_message)
                 log_message(error_message)
-                os.remove(save_path if save_path else filename)
+                os.remove(file_path if file_path else filename)
                 log_message(f"Deleted corrupted file: {filename}")
                 clear_download_state()
         else:
@@ -267,7 +267,7 @@ def main():
             exit()
 
         response = response.split()
-        if response[0]("REGISTER_SUCCESS"):
+        if response and response[0] == ("REGISTER_SUCCESS"):
             role = response[1]
             print("Registration successful!")
             log_message("Registration successful")

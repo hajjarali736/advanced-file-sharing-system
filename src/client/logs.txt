@@ -145,3 +145,46 @@
 2025-04-27 18:24:06,406 - Delete response: ERROR: File not found
 2025-04-27 18:24:10,516 - Sent EXIT command
 2025-04-27 18:24:10,517 - Connection closed
+2025-04-27 18:29:58,411 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 18:30:17,175 - Login failed
+2025-04-27 18:30:22,929 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 18:32:36,024 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 18:32:52,309 - Sent LIST command
+2025-04-27 18:32:52,310 - Received file list
+2025-04-27 18:33:21,565 - Requesting download for testing.md
+2025-04-27 18:33:21,567 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-27 18:33:21,567 - Saved download state for testing.md at offset 0
+2025-04-27 18:33:21,568 - Saved download state for testing.md at offset 1024
+2025-04-27 18:33:25,766 - Saved download state for testing.md at offset 1562
+2025-04-27 18:33:30,375 - Downloaded testing.md successfully (checksum verified)
+2025-04-27 18:33:30,376 - Cleared download state
+2025-04-27 18:33:35,973 - Sent EXIT command
+2025-04-27 18:33:35,974 - Connection closed
+2025-04-27 18:33:42,415 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 18:33:51,625 - Login successful with role: user
+2025-04-27 18:33:55,509 - Sent LIST command
+2025-04-27 18:33:55,510 - Received file list
+2025-04-27 18:34:07,582 - Preparing to upload testing.md of size 1562 bytes with checksum 24929
+2025-04-27 18:34:07,585 - Upload response: SUCCESS: File received as testing(1).md (checksum verified)
+2025-04-27 18:34:13,270 - Sent EXIT command
+2025-04-27 18:34:13,270 - Connection closed
+2025-04-27 19:04:20,110 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 19:04:32,593 - Login successful with role: admin
+2025-04-27 19:04:32,594 - Admin privileges granted
+2025-04-27 19:04:36,552 - Sent LIST command
+2025-04-27 19:04:36,553 - Received file list
+2025-04-27 19:04:48,737 - Delete response: ERROR: File not found
+2025-04-27 19:04:55,064 - Sent EXIT command
+2025-04-27 19:04:55,065 - Connection closed
+2025-04-27 19:14:03,364 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 19:14:13,418 - Login successful with role: admin
+2025-04-27 19:14:13,418 - Admin privileges granted
+2025-04-27 19:14:16,616 - Sent LIST command
+2025-04-27 19:14:16,617 - Received file list
+2025-04-27 19:14:24,657 - Delete response: ERROR: File not found
+2025-04-27 19:18:29,906 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 19:18:37,394 - Login successful with role: admin
+2025-04-27 19:18:37,395 - Admin privileges granted
+2025-04-27 19:18:48,026 - Delete response: SUCCESS: Deleted test.txt
+2025-04-27 19:18:53,416 - Sent EXIT command
+2025-04-27 19:18:53,416 - Connection closed
