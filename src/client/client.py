@@ -19,7 +19,7 @@ def hash_password(password):
 
 
 
-# Function to calculate 16-bit checksum of a file
+# function to calculate 16-bit checksum of a file
 def calculate_checksum(filename):
     checksum = 0
     try:
@@ -28,9 +28,9 @@ def calculate_checksum(filename):
                 chunk = f.read(1024)
                 if not chunk:
                     break
-                # Sum up ASCII values of all bytes in the file
+                # sum up ASCII values of all bytes in the file
                 checksum += sum(chunk)
-        # Take modulo 65536 to get 16-bit checksum
+        # take modulo 65536 to get 16-bit checksum
         return checksum % 65536
     except Exception as e:
         log_message(f"Error calculating checksum: {str(e)}")
@@ -104,6 +104,8 @@ def clear_download_state():
     log_message("Cleared download state")
 
 def download_file(filename, clientSocket, resume=False):
+    # Ensure the file path is relative to the directory of client.py
+    file_path = os.path.join(os.path.dirname(__file__), filename)
     try:
         if resume:
             state = load_download_state()
@@ -137,7 +139,7 @@ def download_file(filename, clientSocket, resume=False):
             mode = "ab" if resume else "wb"
             #RANIM: im gonna implement the download logic here:
 
-            with open(filename, mode) as f:
+            with open(file_path, mode) as f:
                 received = offset if resume else 0
                 while received < filesize:
                     chunk = clientSocket.recv(1024)
@@ -150,11 +152,31 @@ def download_file(filename, clientSocket, resume=False):
                     print(f"Received {received}/{filesize} bytes")
 
                     action = input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
+
+                    while action != "CONTINUE":
+                        if action == "PAUSE":
+                            clientSocket.send(b"PAUSE")
+                            print("Download paused. Resume download using CONTINUE.")
+                            log_message("Download paused by user.")
+
+                        elif action == "STOP":
+                            clientSocket.send(b"STOP")
+                            print("Download stopped by user.")
+                            log_message("Download stopped by user.")
+                            return
+                        
+                        elif action != "CONTINUE":
+                            print("Invalid action. Please enter CONTINUE to resume download.")
+                            log_message("Invalid action entered by user.")
+                        
+                        action = input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
+
+                    
                     if action == "CONTINUE":
                         clientSocket.send(b"CONTINUE")
                         continue
 
-                    elif action == "PAUSE":
+                    '''elif action == "PAUSE":
                         clientSocket.send(b"PAUSE")
                         print("Download paused. You can resume later using RESUME.")
                         log_message("Download paused by user.")
@@ -168,13 +190,9 @@ def download_file(filename, clientSocket, resume=False):
                     
                     else:
                         print("Invalid action, Defaulting to CONTINUE")
-                        clientSocket.send(b"CONTINUE")
+                        clientSocket.send(b"CONTINUE")'''
 
             # Verify checksum after download
-
-          
-
-            
 
             actual_checksum = calculate_checksum(filename)
             if actual_checksum == expected_checksum:
@@ -269,22 +287,22 @@ def main():
             filename = command.split()[1]
             download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
 
-        elif command == "PAUSE":
-            state = load_download_state()
-            if state:
-                print(f"Download paused: {state['filename']} at {state['offset']}/{state['total_size']} bytes")
-                clientSocket.send(b"PAUSE")
-                log_message("Sent PAUSE command")
-            else:
-                print("No active download to pause")
+        #elif command == "PAUSE":
+        #    state = load_download_state()
+        #    if state:
+        #        print(f"Download paused: {state['filename']} at {state['offset']}/{state['total_size']} bytes")
+        #        clientSocket.send(b"PAUSE")
+        #        log_message("Sent PAUSE command")
+        #    else:
+        #        print("No active download to pause")
 
-        elif command == "RESUME":
-            state = load_download_state()
-            if state:
-                print(f"Resuming download: {state['filename']} from {state['offset']}/{state['total_size']} bytes")
-                download_file(state['filename'], clientSocket, resume=True)
-            else:
-                print("No paused download to resume")
+        #elif command == "RESUME":
+        #    state = load_download_state()
+        #    if state:
+        #        print(f"Resuming download: {state['filename']} from {state['offset']}/{state['total_size']} bytes")
+        #        download_file(state['filename'], clientSocket, resume=True)
+        #    else:
+        #        print("No paused download to resume")
             
         elif command.startswith("DELETE "):
             if (role!="admin"):
@@ -300,20 +318,16 @@ def main():
         else:
             error_message = "Invalid command. Format:"
             print(error_message)
-            print("LIST | UPLOAD filename | DOWNLOAD filename | PAUSE | RESUME | EXIT") #prints usage info if the command doesn't match any supported format
+            print("LIST | UPLOAD filename | DOWNLOAD filename | EXIT") #prints usage info if the command doesn't match any supported format
             log_message(error_message)
 
-        command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip()
+        command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | DELETE filename | EXIT): ").strip()
 
     if command == "EXIT":
         clientSocket.send(b"EXIT")
         log_message("Sent EXIT command")
         clientSocket.close() #closes the socket (it terminates the client)
         log_message("Connection closed")
-        
-    # since EXIT is the only way to close the socket, i will remove these lines:
-    #clientSocket.close()
-    #log_message("Connection closed")
 
 
 if __name__ == "__main__":

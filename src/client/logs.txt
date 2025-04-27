@@ -1,0 +1,73 @@
+2025-04-27 13:32:35,573 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 13:32:41,160 - Login successful with role: user
+2025-04-27 13:32:52,863 - Requesting download for test.txt
+2025-04-27 13:32:52,871 - File size received: 11 bytes, expected checksum: 1101
+2025-04-27 13:32:52,871 - Saved download state for test.txt at offset 0
+2025-04-27 13:32:52,871 - Saved download state for test.txt at offset 11
+2025-04-27 13:32:57,688 - Download paused by user.
+2025-04-27 13:33:16,929 - Downloaded test.txt successfully (checksum verified)
+2025-04-27 13:33:16,929 - Cleared download state
+2025-04-27 13:43:39,355 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 13:43:43,545 - Login successful with role: user
+2025-04-27 13:43:49,048 - Requesting download for test.txt
+2025-04-27 13:43:49,049 - File size received: 11 bytes, expected checksum: 1101
+2025-04-27 13:43:49,049 - Saved download state for test.txt at offset 0
+2025-04-27 13:43:49,050 - Saved download state for test.txt at offset 11
+2025-04-27 13:43:52,265 - Downloaded test.txt successfully (checksum verified)
+2025-04-27 13:43:52,265 - Cleared download state
+2025-04-27 13:44:08,216 - Requesting download for test.txt
+2025-04-27 13:44:08,217 - File size received: 11 bytes, expected checksum: 1101
+2025-04-27 13:44:08,217 - Saved download state for test.txt at offset 0
+2025-04-27 13:44:08,218 - Saved download state for test.txt at offset 11
+2025-04-27 13:44:11,554 - Downloaded test.txt successfully (checksum verified)
+2025-04-27 13:44:11,554 - Cleared download state
+2025-04-27 13:44:25,592 - Sent EXIT command
+2025-04-27 13:44:25,592 - Connection closed
+2025-04-27 13:49:01,749 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 13:49:05,641 - Login successful with role: user
+2025-04-27 13:49:15,249 - Preparing to upload randomFile.txt of size 25 bytes with checksum 2405
+2025-04-27 13:49:15,251 - Upload response: SUCCESS: File received as randomFile(1).txt (checksum verified)
+2025-04-27 13:49:30,824 - Requesting download for randomFile(1).txt
+2025-04-27 13:49:30,825 - Download error: ERROR: File not found
+2025-04-27 13:49:36,256 - Sent EXIT command
+2025-04-27 13:49:36,257 - Connection closed
+2025-04-27 13:50:54,670 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 13:50:58,017 - Login successful with role: user
+2025-04-27 13:51:13,257 - Sent LIST command
+2025-04-27 13:51:13,258 - Received file list
+2025-04-27 13:51:33,409 - Preparing to upload randomFile.txt of size 25 bytes with checksum 2405
+2025-04-27 13:51:33,412 - Upload response: SUCCESS: File received as randomFile(1).txt (checksum verified)
+2025-04-27 13:51:40,953 - Sent LIST command
+2025-04-27 13:51:40,953 - Received file list
+2025-04-27 13:51:50,289 - Preparing to upload randomFile.txt of size 25 bytes with checksum 2405
+2025-04-27 13:51:50,291 - Upload response: SUCCESS: File received as randomFile(2).txt (checksum verified)
+2025-04-27 13:51:54,592 - Sent LIST command
+2025-04-27 13:51:54,593 - Received file list
+2025-04-27 13:52:00,216 - Sent EXIT command
+2025-04-27 13:52:00,217 - Connection closed
+2025-04-27 14:03:26,730 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 14:03:31,258 - Login successful with role: user
+2025-04-27 14:03:41,042 - Requesting download for test.txt
+2025-04-27 14:03:41,043 - File size received: 11 bytes, expected checksum: 1101
+2025-04-27 14:03:41,043 - Saved download state for test.txt at offset 0
+2025-04-27 14:03:41,044 - Saved download state for test.txt at offset 11
+2025-04-27 14:03:45,553 - Invalid action entered by user.
+2025-04-27 14:03:48,274 - Downloaded test.txt successfully (checksum verified)
+2025-04-27 14:03:48,274 - Cleared download state
+2025-04-27 14:04:02,105 - Sent EXIT command
+2025-04-27 14:04:02,106 - Connection closed
+2025-04-27 14:04:39,809 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 14:04:44,874 - Login successful with role: user
+2025-04-27 14:04:47,305 - Sent LIST command
+2025-04-27 14:04:47,306 - Received file list
+2025-04-27 14:05:03,177 - Requesting download for someTestFile.docx
+2025-04-27 14:05:03,191 - File size received: 107 bytes, expected checksum: 10476
+2025-04-27 14:05:03,191 - Saved download state for someTestFile.docx at offset 0
+2025-04-27 14:05:03,192 - Saved download state for someTestFile.docx at offset 107
+2025-04-27 14:05:11,258 - Error calculating checksum: [Errno 2] No such file or directory: 'someTestFile.docx'
+2025-04-27 14:05:11,258 - Checksum verification failed for someTestFile.docx. File may be corrupted.
+2025-04-27 14:05:11,259 - Download error: [WinError 2] The system cannot find the file specified: 'someTestFile.docx'
+2025-04-27 14:05:24,209 - Sent LIST command
+2025-04-27 14:05:24,210 - Received file list
+2025-04-27 14:05:27,579 - Sent EXIT command
+2025-04-27 14:05:27,579 - Connection closed

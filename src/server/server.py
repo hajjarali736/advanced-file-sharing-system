@@ -315,10 +315,27 @@ def handle_client(client_socket, addr):
                             try:
                                 response = client_socket.recv(1024).decode().strip().upper()
                             except socket.timeout:
-                                log_message(f"Timeout:No response from {addr}after chunk {counter}. Aborting this transfer.")
-                                break
+                                log_message(f"Timeout:No response from {addr} after chunk {counter}. Aborting this transfer.")
+                                return
                             #if the cliet replies with a continue it'll send the next chumk
-                            if response=="CONTINUE":
+                            while response != "CONTINUE":
+                                if response == "PAUSE":
+                                    log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
+                                    client_socket.settimeout(30)
+                                elif response == "STOP":
+                                    log_message(f"Client{addr} stopped the download.")
+                                    return
+                                try:
+                                    response = client_socket.recv(1024).decode().strip().upper()
+                                except socket.timeout:
+                                    log_message(f"Timeout:No response from {addr} after chunk {counter}. Aborting this transfer.")
+                                    return
+
+                            if response == "CONTINUE":
+                                log_message(f"Client {addr} requested to continue download after chunk {counter}.")
+                                continue
+
+                            '''if response=="CONTINUE":
                                 continue
                             elif response=="PAUSE":
                                 log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
@@ -341,7 +358,7 @@ def handle_client(client_socket, addr):
                                 break
                             else:
                                 log_message(f"Unexpected response '{response}' from {addr}.Closing connection.")
-                                break
+                                break'''
                     
                     
 
@@ -352,10 +369,10 @@ def handle_client(client_socket, addr):
                     client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
                     log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")
 
-            elif parts[0] == "PAUSE":
-                log_message(f"Client {addr} requested pause")
-                client_socket.send("PAUSE_ACK".encode('utf-8'))
-                return
+            #elif parts[0] == "PAUSE":
+            #    log_message(f"Client {addr} requested pause")
+            #    client_socket.send("PAUSE_ACK".encode('utf-8'))
+            #    return
 
             elif parts[0] == "LIST":
                 # send the client a list of files
@@ -395,6 +412,8 @@ def handle_client(client_socket, addr):
 
             command = client_socket.recv(1024).decode('utf-8')
             parts = command.split()
+            file_list = os.listdir(files_path)
+
 
             # log the command
             log_message(f"{addr} issued the command {command}")
