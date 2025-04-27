@@ -332,7 +332,7 @@ def handle_client(client_socket, addr):
                     # Perform case-insensitive file matching
                     matched_file = next((f for f in file_list if f.lower() == filename.lower()), None)
                     if not matched_file:
-                        client_socket.send("ERROR: File not found".encode())
+                        client_socket.send(f"ERROR: File not found {filename}".encode())
                         log_message(f"ERROR: {addr} requested non-existent file {filename}")
                         return
 
