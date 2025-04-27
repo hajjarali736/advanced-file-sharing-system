@@ -294,6 +294,7 @@ def handle_client(client_socket, addr):
 
                     filename = parts[1] # get <filename>
                     file_path = os.path.join(files_path, filename)
+                    offset = 0
                     if (len(parts)==3 and parts[2] == "resume"):
                         conn = connect_db()
                         cursor = conn.cursor()
