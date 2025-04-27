@@ -136,3 +136,30 @@
 2025-04-27 14:26:19,796 - SUCCESS: File testing.md successfully sent to ('127.0.0.1', 55850)
 2025-04-27 14:26:25,956 - ('127.0.0.1', 55850) issued the command EXIT
 2025-04-27 14:26:25,956 - Closing connection with ('127.0.0.1', 55850)
+2025-04-27 17:51:57,901 - Connection with ('127.0.0.1', 57930) established
+2025-04-27 17:52:08,707 - ('127.0.0.1', 57930) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 17:52:08,708 - Closing connection with ('127.0.0.1', 57930)
+2025-04-27 17:53:39,479 - Connection with ('127.0.0.1', 57945) established
+2025-04-27 17:53:49,282 - ('127.0.0.1', 57945) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 17:53:49,283 - Closing connection with ('127.0.0.1', 57945)
+2025-04-27 18:00:30,452 - Connection with ('127.0.0.1', 57988) established
+2025-04-27 18:00:41,139 - ('127.0.0.1', 57988) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 18:00:41,141 - Closing connection with ('127.0.0.1', 57988)
+2025-04-27 18:22:20,368 - Connection with ('127.0.0.1', 50127) established
+2025-04-27 18:22:33,973 - ('127.0.0.1', 50127) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-27 18:22:33,976 - ('127.0.0.1', 50127) authenticated as Admin successfully
+2025-04-27 18:22:42,293 - ('127.0.0.1', 50127) issued the command LIST
+2025-04-27 18:22:42,293 - File list successfully sent to ('127.0.0.1', 50127)
+2025-04-27 18:22:58,822 - ('127.0.0.1', 50127) issued the command DOWNLOAD test.txt
+2025-04-27 18:22:58,822 - File size: 11 and checksum: 1101 sent to ('127.0.0.1', 50127)
+2025-04-27 18:22:58,823 - Client ('127.0.0.1', 50127) is ready. Starting file transfer from offset 0.
+2025-04-27 18:22:58,823 - Sent chunk 0 to ('127.0.0.1', 50127). Progress: 100.00%
+2025-04-27 18:23:05,124 - Client ('127.0.0.1', 50127) requested to continue download after chunk 1.
+2025-04-27 18:23:05,125 - SUCCESS: File test.txt successfully sent to ('127.0.0.1', 50127)
+2025-04-27 18:23:25,437 - ('127.0.0.1', 50127) issued the command UPLOAD test.txt 11 1101
+2025-04-27 18:23:25,439 - SUCCESS: File received as test(1).txt from ('127.0.0.1', 50127) (checksum verified)
+2025-04-27 18:23:40,597 - ('127.0.0.1', 50127) issued the command UPLOAD test.txt 11 1101 -o
+2025-04-27 18:23:40,599 - SUCCESS: File received as test.txt from ('127.0.0.1', 50127) (checksum verified)
+2025-04-27 18:24:06,405 - ('127.0.0.1', 50127) issued the command DELETE test(1).txt
+2025-04-27 18:24:10,517 - ('127.0.0.1', 50127) issued the command EXIT
+2025-04-27 18:24:10,517 - Closing connection with ('127.0.0.1', 50127)

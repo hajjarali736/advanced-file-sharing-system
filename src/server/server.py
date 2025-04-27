@@ -8,8 +8,22 @@ import hashlib
 
 
 """ database functions"""
+
+def initialize_db_from_file(sql_file_path):
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    with open(sql_file_path, 'r') as f:
+        sql_script = f.read()
+
+    cursor.executescript(sql_script)
+
+    conn.commit()
+    conn.close()
+
+
 def connect_db():
-    conn = sqlite3.connect('user_data.db')
+    conn = sqlite3.connect('user_authentication.db')
     return conn
 
 # Function to create the user table if it doesn't exist
@@ -31,15 +45,12 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 # Function to register a user (username, password, role)
-def register(username, password, role="user"):
+def register(username, hashed_password, role="user"):
     conn = connect_db()
     cursor = conn.cursor()
     
-    # Hash the password before storing it
-    hashed_password = hash_password(password)
-    
     try:
-        cursor.execute('''INSERT INTO USER (username, password, role) 
+        cursor.execute('''INSERT INTO users (username, password_hash, role) 
                           VALUES (?, ?, ?)''', (username, hashed_password, role))
         conn.commit()
         print(f"User {username} registered successfully.")
@@ -57,7 +68,7 @@ def validate_credentials(username, received_hash):
     cursor = conn.cursor()
     
     # Get stored hash from database
-    cursor.execute('''SELECT password FROM USER WHERE username = ?''', (username,))
+    cursor.execute('''SELECT password_hash FROM users WHERE username = ?''', (username,))
     result = cursor.fetchone()
     
     conn.close()
@@ -69,11 +80,23 @@ def user_exists(username):
     conn = connect_db()
     cursor = conn.cursor()
     
-    cursor.execute('''SELECT username FROM USER WHERE username = ?''', (username,))
+    cursor.execute('''SELECT username FROM users WHERE username = ?''', (username,))
     user = cursor.fetchone()
     
     conn.close()
     return user is not None  
+
+def get_user_role(username):
+    """Get the role of a user"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('''SELECT role FROM users WHERE username = ?''', (username,))
+    result = cursor.fetchone()
+    
+    conn.close()
+    
+    return result[0] if result else None
 
 # Function to calculate 16-bit checksum of a file
 def calculate_checksum(filename):
@@ -107,41 +130,43 @@ def log_message(message):
 def handle_client(client_socket, addr):
     try:
         ''' Ranim: Implementing the access control /login system'''
-        valid_users={
-            "admin": {"password":"adminpass","role":"admin"},
-            "user":{"password": "userpass","role":"user"} 
-        }
-        authenticated=False
-        username=None
+        # valid_users={
+        #     "admin": {"password":"adminpass","role":"admin"},
+        #     "user":{"password": "userpass","role":"user"} 
+        # }
+        # authenticated=False
+        # username=None
 
 
-        login_attempt=client_socket.recv(1024).decode().strip()
-        log_message(f"{addr} sent login attempt: {login_attempt}")
+        # login_attempt = client_socket.recv(1024).decode().strip()
+        # log_message(f"{addr} sent login attempt: {login_attempt}")
 
-        if not login_attempt.startswith("LOGIN "):
-            client_socket.send("ERROR: you must login first using LOGIN<username><password>".encode())
-            log_message(f"{addr} failed to login:No LOGIN command")
-            client_socket.close()
-            return
-        parts = login_attempt.split()
-        if (len(parts)!=3):
-            client_socket.send("ERROR:Invalid login format. Use LOGIN<username><password>".encode())
-            log_message(f"{addr} failed login:Invalid format")
-            client_socket.close()
-            return
+        # if not login_attempt.startswith("LOGIN "):
+        #     client_socket.send("ERROR: you must login first using LOGIN<username><password>".encode())
+        #     log_message(f"{addr} failed to login:No LOGIN command")
+        #     client_socket.close()
+        #     return
         
-        username,password= parts[1],parts[2]
+        # parts = login_attempt.split()
+        
+        # if (len(parts)!=3):
+        #     client_socket.send("ERROR:Invalid login format. Use LOGIN<username><password>".encode())
+        #     log_message(f"{addr} failed login:Invalid format")
+        #     client_socket.close()
+        #     return
+        
+        # username,password= parts[1],parts[2]
 
-        if (username in valid_users and valid_users[username]["password"]==password):
-            authenticated=True
-            role=valid_users[username]["role"]
-            client_socket.send(f"LOGIN_SUCCESS {role}".encode())
-            log_message(f"{addr} authenticated as {username}({role})")
-        else:
-            client_socket.send("LOGIN_FAILED".encode())
-            log_message(f"{addr} failed login with username {username}")
-            client_socket.close()
-            return
+        # if (username in valid_users and valid_users[username]["password"]==password):
+        #     authenticated=True
+        #     role=valid_users[username]["role"]
+        #     client_socket.send(f"LOGIN_SUCCESS {role}".encode())
+        #     log_message(f"{addr} authenticated as {username}({role})")
+        # else:
+        #     client_socket.send("LOGIN_FAILED".encode())
+        #     log_message(f"{addr} failed login with username {username}")
+        #     client_socket.close()
+        #     return
 
         '''
             The client sends 3 kinds of commands:
@@ -151,6 +176,53 @@ def handle_client(client_socket, addr):
             4. PAUSE: client requests to pause current download
         '''
         log_message(f"Connection with {addr} established")
+        login_message = client_socket.recv(1024).decode().strip()
+
+        if login_message.startswith("LOGIN"):
+            log_message(f"{addr} sent login attempt: {login_message}")
+            parts = login_message.split()
+            if len(parts) != 3:
+                client_socket.send("ERROR: Invalid login format. Use LOGIN <username> <password>".encode())
+                log_message(f"{addr} failed login: Invalid format")
+                return
+            
+            username, password = parts[1], parts[2]
+            # Check if the user exists in the database
+            if not user_exists(username):
+                client_socket.send("ERROR: User does not exist".encode())
+                log_message(f"{addr} failed login: User {username} does not exist")
+                return
+            
+            if not validate_credentials(username, password):
+                client_socket.send("ERROR: Invalid credentials".encode())
+                log_message(f"{addr} failed login: Invalid credentials for {username}")
+                return
+            
+            role = get_user_role(username)
+            client_socket.send(f"LOGIN_SUCCESS {role}".encode())
+            log_message(f"{addr} authenticated as {username} successfully")
+
+        elif login_message.startswith("REGISTER"):
+            log_message(f"{addr} sent registration attempt: {login_message}")
+            parts = login_message.split()
+            if len(parts) != 3:
+                client_socket.send("ERROR: Invalid registration format. Use REGISTER <username> <password>".encode())
+                log_message(f"{addr} failed registration: Invalid format")
+                return
+            
+            username, password = parts[1], parts[2]
+            
+            if register(username, password):
+                client_socket.send("REGISTRATION_SUCCESS user".encode())
+                log_message(f"{addr} registered as {username} with role User")
+            else:
+                client_socket.send("ERROR: Registration failed".encode())
+                log_message(f"{addr} failed registration for {username}")
+
+        else:
+            client_socket.send("ERROR: You must login first using LOGIN <username> <password>".encode())
+            log_message(f"{addr} failed to login: No LOGIN command")
+            return
 
         # get the command from the client
         command = client_socket.recv(1024).decode('utf-8')
@@ -429,6 +501,8 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(("localhost", 8926))
 server_socket.listen(5)
 
+sql_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'files', 'Database.sql')
+initialize_db_from_file(sql_file_path)
 
 # register("admin","adminpass",role="admin")
 

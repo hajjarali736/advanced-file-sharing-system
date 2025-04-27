@@ -249,23 +249,51 @@ def main():
     log_message(f"Connection with {clientSocket.getpeername()} established")
 
     #login logic:
-    username=input("Username: ").strip()
-    password=input("Password: ").strip()
-    clientSocket.send(f"LOGIN {username} {password}".encode())
+    username = input("Username: ").strip()
+    password = input("Password: ").strip()
 
-    response=clientSocket.recv(1024).decode()
-    if (response.startswith("LOGIN_SUCCESS")):
-        role=response.split()[1]#this is to get the role of the user
-        print("Login successful!")
-        log_message(f"Login successful with role: {role}")
-        if role == "admin":
-            print("As an admin, you can also use: DELETE <filename>")#this is only to show the admin his instructions
+    #hash the password before sending it to the server
+    password = hash_password(password)
+    choice = input("Login or Register (L/R): ").strip().upper()
 
-    else:
-        print("Login failed.Exiting..")
-        log_message("Login failed")
-        clientSocket.close()
-        exit()
+    if choice == "R":
+        clientSocket.send(f"REGISTER {username} {password}".encode())
+        response = clientSocket.recv(1024).decode()
+
+        if response.startswith("ERROR:"):
+            print("Registration failed. Exiting..")
+            log_message("Registration failed")
+            clientSocket.close()
+            exit()
+
+        response = response.split()
+        if response[0]("REGISTER_SUCCESS"):
+            role = response[1]
+            print("Registration successful!")
+            log_message("Registration successful")
+            if role == "admin":
+                print("As an admin, you can also use: DELETE <filename>")
+                log_message("Admin privileges granted")
+
+    elif choice == "L":
+        clientSocket.send(f"LOGIN {username} {password}".encode())
+        response = clientSocket.recv(1024).decode()
+        
+        if response.startswith("ERROR:"):
+            print("Login failed. Exiting..")
+            log_message("Login failed")
+            clientSocket.close()
+            exit()
+
+        response = response.split()
+        if response and response[0] == ("LOGIN_SUCCESS"):
+            role = response[1]
+            print("Login successful!")
+            log_message(f"Login successful with role: {role}")
+            if role == "admin":
+                print("As an admin, you can also use: DELETE <filename>")
+                log_message("Admin privileges granted")
+        
 
     command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip()
     #prompts the user for a command and turns it into uppercase(to make it case-insensitive)

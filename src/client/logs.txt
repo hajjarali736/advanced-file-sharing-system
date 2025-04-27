@@ -122,3 +122,26 @@
 2025-04-27 14:26:19,798 - Cleared download state
 2025-04-27 14:26:25,956 - Sent EXIT command
 2025-04-27 14:26:25,956 - Connection closed
+2025-04-27 17:51:57,900 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 17:53:39,479 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 17:53:57,435 - Sent LIST command
+2025-04-27 18:00:30,451 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 18:00:44,892 - Sent LIST command
+2025-04-27 18:22:20,367 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 18:22:33,976 - Login successful with role: admin
+2025-04-27 18:22:33,976 - Admin privileges granted
+2025-04-27 18:22:42,293 - Sent LIST command
+2025-04-27 18:22:42,294 - Received file list
+2025-04-27 18:22:58,821 - Requesting download for test.txt
+2025-04-27 18:22:58,822 - File size received: 11 bytes, expected checksum: 1101
+2025-04-27 18:22:58,823 - Saved download state for test.txt at offset 0
+2025-04-27 18:22:58,823 - Saved download state for test.txt at offset 11
+2025-04-27 18:23:05,126 - Downloaded test.txt successfully (checksum verified)
+2025-04-27 18:23:05,126 - Cleared download state
+2025-04-27 18:23:25,437 - Preparing to upload test.txt of size 11 bytes with checksum 1101
+2025-04-27 18:23:25,439 - Upload response: SUCCESS: File received as test(1).txt (checksum verified)
+2025-04-27 18:23:40,597 - Preparing to upload test.txt of size 11 bytes with checksum 1101
+2025-04-27 18:23:40,599 - Upload response: SUCCESS: File received as test.txt (checksum verified)
+2025-04-27 18:24:06,406 - Delete response: ERROR: File not found
+2025-04-27 18:24:10,516 - Sent EXIT command
+2025-04-27 18:24:10,517 - Connection closed
