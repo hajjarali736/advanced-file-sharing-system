@@ -112,18 +112,11 @@ def download_file(filename, clientSocket, resume=False):
     file_path = os.path.join(os.path.dirname(__file__), filename)
     try:
         if resume:
-            state = load_download_state()
-            if not state or state["filename"] != filename:
-                print("No valid download state found for this file")
-                return
-            offset = state["offset"]
-            total_size = state["total_size"]
-            log_message(f"Resuming download of {filename} from offset {offset}")
-            clientSocket.send(f"DOWNLOAD {filename} {offset}".encode())
+            print(f"resume command: DOWNLOAD {filename} resume")
+            clientSocket.send(f"DOWNLOAD {filename} resume".encode())
         else:
             offset=0#Ranim: I added this to make sure that the offset is defined when not resuming
             #that is, without it, offset would only be defined in the "resume==True" branch
-            offset = 0
             log_message(f"Requesting download for {filename}")
             clientSocket.send(f"DOWNLOAD {filename}".encode())
         
@@ -134,6 +127,7 @@ def download_file(filename, clientSocket, resume=False):
             parts = response.split()
             filesize = int(parts[1])
             expected_checksum = int(parts[2])
+            offset = int(parts[3]) if len(parts) >= 4 else 0 
             log_message(f"File size received: {filesize} bytes, expected checksum: {expected_checksum}")
             
             if not resume:
@@ -143,7 +137,7 @@ def download_file(filename, clientSocket, resume=False):
             
             mode = "ab" if resume else "wb"
             #RANIM: im gonna implement the download logic here:
-
+            received = offset
             with open(file_path, mode) as f:
                 received = offset if resume else 0
                 while received < filesize:
@@ -344,6 +338,11 @@ def main():
         elif command.startswith("DOWNLOAD "):
             filename = command.split()[1]
             download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
+
+        elif command.startswith("RESUME"):
+            print(command)
+            filename = command.split()[1]
+            download_file(filename, clientSocket, resume=True) 
 
         #elif command == "PAUSE":
         #    state = load_download_state()

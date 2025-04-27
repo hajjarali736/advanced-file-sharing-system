@@ -22,10 +22,24 @@ def initialize_db_from_file(sql_file_path):
     conn.close()
 
 
+
 def connect_db():
     conn = sqlite3.connect('user_authentication.db')
     return conn
 
+
+def create_download_resume_table():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS download_resume (
+                        username TEXT,
+                        filename TEXT,
+                        filesize INTEGER,
+                        last_received_byte INTEGER,
+                        PRIMARY KEY(username, filename)
+                  )''')
+    conn.commit()
+    conn.close()
 # Function to create the user table if it doesn't exist
 def create_table():
     conn = connect_db()
@@ -39,6 +53,15 @@ def create_table():
     conn.close()
 
 
+def update_resume_point(username, filename, filesize, last_received_byte):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute('''INSERT OR REPLACE INTO download_resume 
+                      (username, filename, filesize, last_received_byte)
+                      VALUES (?, ?, ?, ?)''',
+                   (username, filename, filesize, last_received_byte))
+    conn.commit()
+    conn.close()
 
 # Function to hash passwords (help by chatgpt)
 def hash_password(password):
@@ -270,14 +293,45 @@ def handle_client(client_socket, addr):
                         return
 
                     filename = parts[1] # get <filename>
-                    offset = int(parts[2]) if len(parts) == 3 else 0 # get offset if provided
+                    file_path = os.path.join(files_path, filename)
+                    if (len(parts)==3 and parts[2] == "resume"):
+                        conn = connect_db()
+                        cursor = conn.cursor()
+                        cursor.execute('''SELECT filesize, last_received_byte FROM download_resume
+                                        WHERE username=? AND filename=?''', 
+                                        (username, filename))
+                        result = cursor.fetchone()
+                        conn.close()
+
+                        if result:
+                            db_filesize,db_offset = result
+                            actual_filesize = os.path.getsize(file_path)
+                            if actual_filesize == db_filesize:
+                                offset = db_offset
+                            else:
+                                client_socket.send("ERROR: File Change".encode())
+                                log_message(f"Resume failed for {filename} (file changed)")
+                                return
+
+                        elif len(parts)==3:
+                            try:
+                                offset = int(parts[2]) # get offset if provided
+                            except ValueError:
+                                client_socket.send("ERROR: Invalid offset".encode())
+                                return
+                        else:
+                            offset = 0
+
+
+
+
                     file_path = os.path.join("files", filename)
 
                     #if not os.path.exists(file_path):
                     # Perform case-insensitive file matching
                     matched_file = next((f for f in file_list if f.lower() == filename.lower()), None)
                     if not matched_file:
-                        client_socket.send("ERROR: File not found".encode('utf-8'))
+                        client_socket.send("ERROR: File not found".encode())
                         log_message(f"ERROR: {addr} requested non-existent file {filename}")
                         return
 
@@ -285,17 +339,20 @@ def handle_client(client_socket, addr):
 
                     filesize = os.path.getsize(file_path)
                     if offset >= filesize:
-                        client_socket.send("ERROR: Invalid offset".encode('utf-8'))
+                        client_socket.send("ERROR: Invalid offset".encode())
                         log_message(f"ERROR: {addr} sent invalid offset {offset}")
                         return
 
                     checksum = calculate_checksum(file_path)
                     if checksum is None:
-                        client_socket.send("ERROR: Failed to calculate file checksum".encode('utf-8'))
+                        client_socket.send("ERROR: Failed to calculate file checksum".encode())
                         log_message(f"ERROR: Failed to calculate checksum for {filename}")
                         return
 
-                    client_socket.send(f"filesize {filesize} {checksum}".encode('utf-8'))
+                    if len(parts)==3 and parts[2] == "resume":
+                        client_socket.send(f"filesize {filesize} {checksum} {offset}".encode())
+                    else:
+                        client_socket.send(f"filesize {filesize} {checksum}".encode())
                     log_message(f"File size: {filesize} and checksum: {checksum} sent to {addr}")
 
                     client_socket.settimeout(3)
@@ -320,41 +377,56 @@ def handle_client(client_socket, addr):
                         f.seek(offset)
                         total_sent=offset
                         counter=0
+                        
+                        try:
+                            while total_sent<filesize:
+                                chunk=f.read(1024)
+                                if not chunk:
+                                    break
 
-                        while total_sent<filesize:
-                            chunk=f.read(1024)
-                            if not chunk:
-                                break
+                                client_socket.sendall(chunk)
+                                total_sent+=len(chunk)
+                                log_message(f"Sent chunk {counter} to {addr}. Progress: {total_sent/filesize*100:.2f}%")
+                                counter+=1
 
-                            client_socket.sendall(chunk)
-                            total_sent+=len(chunk)
-                            log_message(f"Sent chunk {counter} to {addr}. Progress: {total_sent/filesize*100:.2f}%")
-                            counter+=1
-
-                            #now lets see what the client responds with, we'll give them 30 seconds max, else we terminate
-                            client_socket.settimeout(30)
-                            try:
-                                response = client_socket.recv(1024).decode().strip().upper()
-                            except socket.timeout:
-                                log_message(f"Timeout:No response from {addr} after chunk {counter}. Aborting this transfer.")
-                                return
-                            #if the cliet replies with a continue it'll send the next chumk
-                            while response != "CONTINUE":
-                                if response == "PAUSE":
-                                    log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
-                                    client_socket.settimeout(30)
-                                elif response == "STOP":
-                                    log_message(f"Client{addr} stopped the download.")
-                                    return
+                                #now lets see what the client responds with, we'll give them 30 seconds max, else we terminate
+                                client_socket.settimeout(30)
                                 try:
                                     response = client_socket.recv(1024).decode().strip().upper()
                                 except socket.timeout:
                                     log_message(f"Timeout:No response from {addr} after chunk {counter}. Aborting this transfer.")
                                     return
+                                #if the cliet replies with a continue it'll send the next chumk
+                                while response != "CONTINUE":
+                                    if response == "PAUSE":
+                                        log_message(f"Download paused by{addr}. Waiting up to 30 seconds to resume..")
+                                        client_socket.settimeout(30)
+                                    elif response == "STOP":
+                                        log_message(f"Client{addr} stopped the download.")
+                                        return
+                                    try:
+                                        response = client_socket.recv(1024).decode().strip().upper()
+                                    except socket.timeout:
+                                        log_message(f"Timeout:No response from {addr} after chunk {counter}. Aborting this transfer.")
+                                        return
 
-                            if response == "CONTINUE":
-                                log_message(f"Client {addr} requested to continue download after chunk {counter}.")
-                                continue
+                                if response == "CONTINUE":
+                                    log_message(f"Client {addr} requested to continue download after chunk {counter}.")
+                                    continue
+                        except Exception as e:
+                            log_message(f"Transfer interrupted: {str(e)}")
+                            update_resume_point(username, filename, filesize, total_sent)
+                            raise
+                        finally:
+                            if total_sent >= filesize:
+                                conn = connect_db()
+                                cursor = conn.cursor()
+                                cursor.execute('''DELETE FROM download_resume 
+                                        WHERE username=? AND filename=?''',
+                                        (username, filename))
+                                conn.commit()
+                                conn.close()
+                    
 
                     log_message(f"SUCCESS: File {filename} successfully sent to {addr}")
                 
@@ -463,7 +535,8 @@ initialize_db_from_file(sql_file_path)
 
 print("Server is listening for incoming connections...")
 create_table()
-register("admin", hash_password("adminpass"), role = "admin")
+create_download_resume_table()
+# register("admin", hash_password("adminpass"), role = "admin")
 while True:
     client_socket, addr = server_socket.accept()
     print(f"New connection from {addr}")
