@@ -75,3 +75,64 @@
 2025-04-27 14:05:24,210 - File list successfully sent to ('127.0.0.1', 55628)
 2025-04-27 14:05:27,579 - ('127.0.0.1', 55628) issued the command EXIT
 2025-04-27 14:05:27,579 - Closing connection with ('127.0.0.1', 55628)
+2025-04-27 14:09:53,042 - ('127.0.0.1', 55689) sent login attempt: LOGIN user userpass
+2025-04-27 14:09:53,042 - ('127.0.0.1', 55689) authenticated as user(user)
+2025-04-27 14:09:53,043 - Connection with ('127.0.0.1', 55689) established
+2025-04-27 14:10:06,915 - ('127.0.0.1', 55689) issued the command DOWNLOAD someTestFile.docx
+2025-04-27 14:10:06,916 - File size: 4796 and checksum: 3204 sent to ('127.0.0.1', 55689)
+2025-04-27 14:10:09,928 - ERROR: ('127.0.0.1', 55689) timed out waiting for start signal
+2025-04-27 14:10:09,928 - Closing connection with ('127.0.0.1', 55689)
+2025-04-27 14:13:43,218 - ('127.0.0.1', 55746) sent login attempt: LOGIN user userpass
+2025-04-27 14:13:43,218 - ('127.0.0.1', 55746) authenticated as user(user)
+2025-04-27 14:13:43,219 - Connection with ('127.0.0.1', 55746) established
+2025-04-27 14:13:57,618 - ('127.0.0.1', 55746) issued the command DOWNLOAD someTestFile.docx
+2025-04-27 14:13:57,619 - File size: 4796 and checksum: 3204 sent to ('127.0.0.1', 55746)
+2025-04-27 14:13:57,619 - Client ('127.0.0.1', 55746) is ready. Starting file transfer from offset 0.
+2025-04-27 14:13:57,619 - Sent chunk 0 to ('127.0.0.1', 55746). Progress: 21.35%
+2025-04-27 14:14:03,739 - Download paused by('127.0.0.1', 55746). Waiting up to 30 seconds to resume..
+2025-04-27 14:14:12,739 - Client ('127.0.0.1', 55746) requested to continue download after chunk 1.
+2025-04-27 14:14:12,739 - Sent chunk 1 to ('127.0.0.1', 55746). Progress: 42.70%
+2025-04-27 14:14:16,850 - Client ('127.0.0.1', 55746) requested to continue download after chunk 2.
+2025-04-27 14:14:16,851 - Sent chunk 2 to ('127.0.0.1', 55746). Progress: 64.05%
+2025-04-27 14:14:25,810 - Client ('127.0.0.1', 55746) requested to continue download after chunk 3.
+2025-04-27 14:14:25,810 - Sent chunk 3 to ('127.0.0.1', 55746). Progress: 85.40%
+2025-04-27 14:14:31,370 - Client ('127.0.0.1', 55746) requested to continue download after chunk 4.
+2025-04-27 14:14:31,370 - Sent chunk 4 to ('127.0.0.1', 55746). Progress: 100.00%
+2025-04-27 14:14:38,106 - Client ('127.0.0.1', 55746) requested to continue download after chunk 5.
+2025-04-27 14:14:38,107 - SUCCESS: File someTestFile.docx successfully sent to ('127.0.0.1', 55746)
+2025-04-27 14:14:45,355 - ('127.0.0.1', 55746) issued the command EXIT
+2025-04-27 14:14:45,356 - Closing connection with ('127.0.0.1', 55746)
+2025-04-27 14:21:00,963 - ('127.0.0.1', 55812) sent login attempt: LOGIN user userpass
+2025-04-27 14:21:00,963 - ('127.0.0.1', 55812) authenticated as user(user)
+2025-04-27 14:21:00,963 - Connection with ('127.0.0.1', 55812) established
+2025-04-27 14:21:11,899 - ('127.0.0.1', 55812) issued the command DOWNLOAD someTestFile.docx
+2025-04-27 14:21:11,900 - File size: 4796 and checksum: 3204 sent to ('127.0.0.1', 55812)
+2025-04-27 14:21:11,901 - Client ('127.0.0.1', 55812) is ready. Starting file transfer from offset 0.
+2025-04-27 14:21:11,901 - Sent chunk 0 to ('127.0.0.1', 55812). Progress: 21.35%
+2025-04-27 14:21:17,619 - Client ('127.0.0.1', 55812) requested to continue download after chunk 1.
+2025-04-27 14:21:17,619 - Sent chunk 1 to ('127.0.0.1', 55812). Progress: 42.70%
+2025-04-27 14:21:19,578 - Client ('127.0.0.1', 55812) requested to continue download after chunk 2.
+2025-04-27 14:21:19,579 - Sent chunk 2 to ('127.0.0.1', 55812). Progress: 64.05%
+2025-04-27 14:21:22,963 - Client ('127.0.0.1', 55812) requested to continue download after chunk 3.
+2025-04-27 14:21:22,963 - Sent chunk 3 to ('127.0.0.1', 55812). Progress: 85.40%
+2025-04-27 14:21:25,211 - Client ('127.0.0.1', 55812) requested to continue download after chunk 4.
+2025-04-27 14:21:25,211 - Sent chunk 4 to ('127.0.0.1', 55812). Progress: 100.00%
+2025-04-27 14:21:31,019 - Client ('127.0.0.1', 55812) requested to continue download after chunk 5.
+2025-04-27 14:21:31,019 - SUCCESS: File someTestFile.docx successfully sent to ('127.0.0.1', 55812)
+2025-04-27 14:21:37,995 - ('127.0.0.1', 55812) issued the command EXIT
+2025-04-27 14:21:37,995 - Closing connection with ('127.0.0.1', 55812)
+2025-04-27 14:25:56,818 - ('127.0.0.1', 55850) sent login attempt: LOGIN user userpass
+2025-04-27 14:25:56,819 - ('127.0.0.1', 55850) authenticated as user(user)
+2025-04-27 14:25:56,819 - Connection with ('127.0.0.1', 55850) established
+2025-04-27 14:25:59,883 - ('127.0.0.1', 55850) issued the command LIST
+2025-04-27 14:25:59,884 - File list successfully sent to ('127.0.0.1', 55850)
+2025-04-27 14:26:08,300 - ('127.0.0.1', 55850) issued the command DOWNLOAD testing.md
+2025-04-27 14:26:08,300 - File size: 1562 and checksum: 24929 sent to ('127.0.0.1', 55850)
+2025-04-27 14:26:08,301 - Client ('127.0.0.1', 55850) is ready. Starting file transfer from offset 0.
+2025-04-27 14:26:08,301 - Sent chunk 0 to ('127.0.0.1', 55850). Progress: 65.56%
+2025-04-27 14:26:13,499 - Client ('127.0.0.1', 55850) requested to continue download after chunk 1.
+2025-04-27 14:26:13,500 - Sent chunk 1 to ('127.0.0.1', 55850). Progress: 100.00%
+2025-04-27 14:26:19,796 - Client ('127.0.0.1', 55850) requested to continue download after chunk 2.
+2025-04-27 14:26:19,796 - SUCCESS: File testing.md successfully sent to ('127.0.0.1', 55850)
+2025-04-27 14:26:25,956 - ('127.0.0.1', 55850) issued the command EXIT
+2025-04-27 14:26:25,956 - Closing connection with ('127.0.0.1', 55850)

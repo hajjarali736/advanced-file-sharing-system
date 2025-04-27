@@ -71,3 +71,54 @@
 2025-04-27 14:05:24,210 - Received file list
 2025-04-27 14:05:27,579 - Sent EXIT command
 2025-04-27 14:05:27,579 - Connection closed
+2025-04-27 14:09:47,533 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 14:09:53,042 - Login successful with role: user
+2025-04-27 14:10:06,914 - Requesting download for someTestFile.docx
+2025-04-27 14:10:06,916 - File size received: 4796 bytes, expected checksum: 3204
+2025-04-27 14:10:06,916 - Download error: name 'save_path' is not defined
+2025-04-27 14:11:59,050 - Invalid command. Format:
+2025-04-27 14:12:02,915 - Sent EXIT command
+2025-04-27 14:12:02,915 - Connection closed
+2025-04-27 14:13:38,757 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 14:13:43,219 - Login successful with role: user
+2025-04-27 14:13:57,618 - Requesting download for someTestFile.docx
+2025-04-27 14:13:57,619 - File size received: 4796 bytes, expected checksum: 3204
+2025-04-27 14:13:57,619 - Saved download state for someTestFile.docx at offset 0
+2025-04-27 14:13:57,619 - Saved download state for someTestFile.docx at offset 1024
+2025-04-27 14:14:03,739 - Download paused by user.
+2025-04-27 14:14:12,739 - Saved download state for someTestFile.docx at offset 2048
+2025-04-27 14:14:16,851 - Saved download state for someTestFile.docx at offset 3072
+2025-04-27 14:14:25,810 - Saved download state for someTestFile.docx at offset 4096
+2025-04-27 14:14:31,370 - Saved download state for someTestFile.docx at offset 4796
+2025-04-27 14:14:38,107 - Error calculating checksum: [Errno 2] No such file or directory: 'someTestFile.docx'
+2025-04-27 14:14:38,107 - Checksum verification failed for someTestFile.docx. File may be corrupted.
+2025-04-27 14:14:38,108 - Download error: name 'save_path' is not defined
+2025-04-27 14:14:45,355 - Sent EXIT command
+2025-04-27 14:14:45,356 - Connection closed
+2025-04-27 14:20:55,640 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 14:21:00,963 - Login successful with role: user
+2025-04-27 14:21:11,899 - Requesting download for someTestFile.docx
+2025-04-27 14:21:11,900 - File size received: 4796 bytes, expected checksum: 3204
+2025-04-27 14:21:11,900 - Saved download state for someTestFile.docx at offset 0
+2025-04-27 14:21:11,901 - Saved download state for someTestFile.docx at offset 1024
+2025-04-27 14:21:17,619 - Saved download state for someTestFile.docx at offset 2048
+2025-04-27 14:21:19,579 - Saved download state for someTestFile.docx at offset 3072
+2025-04-27 14:21:22,963 - Saved download state for someTestFile.docx at offset 4096
+2025-04-27 14:21:25,211 - Saved download state for someTestFile.docx at offset 4796
+2025-04-27 14:21:31,021 - Downloaded someTestFile.docx successfully (checksum verified)
+2025-04-27 14:21:31,021 - Cleared download state
+2025-04-27 14:21:37,995 - Sent EXIT command
+2025-04-27 14:21:37,995 - Connection closed
+2025-04-27 14:25:52,803 - Connection with ('127.0.0.1', 8926) established
+2025-04-27 14:25:56,819 - Login successful with role: user
+2025-04-27 14:25:59,883 - Sent LIST command
+2025-04-27 14:25:59,884 - Received file list
+2025-04-27 14:26:08,299 - Requesting download for testing.md
+2025-04-27 14:26:08,300 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-27 14:26:08,300 - Saved download state for testing.md at offset 0
+2025-04-27 14:26:08,301 - Saved download state for testing.md at offset 1024
+2025-04-27 14:26:13,500 - Saved download state for testing.md at offset 1562
+2025-04-27 14:26:19,797 - Downloaded testing.md successfully (checksum verified)
+2025-04-27 14:26:19,798 - Cleared download state
+2025-04-27 14:26:25,956 - Sent EXIT command
+2025-04-27 14:26:25,956 - Connection closed

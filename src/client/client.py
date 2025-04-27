@@ -134,7 +134,7 @@ def download_file(filename, clientSocket, resume=False):
             log_message(f"File size received: {filesize} bytes, expected checksum: {expected_checksum}")
             
             if not resume:
-                save_download_state(filename, 0, filesize, save_path)
+                save_download_state(filename, 0, filesize, file_path)
             
             clientSocket.send("START".encode())
             
@@ -196,7 +196,7 @@ def download_file(filename, clientSocket, resume=False):
 
             # Verify checksum after download
 
-            actual_checksum = calculate_checksum(filename)
+            actual_checksum = calculate_checksum(file_path)
             if actual_checksum == expected_checksum:
                 success_message = f"Downloaded {filename} successfully (checksum verified)"
                 print(success_message)
