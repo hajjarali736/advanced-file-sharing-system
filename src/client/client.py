@@ -11,6 +11,7 @@ log_file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
 # Global variable to track download state
 download_state = None
 download_stopped = False
+connection_closed = False
 
 # Function  to hash password before sending it to server
 def hash_password(password):
@@ -109,6 +110,7 @@ def clear_download_state():
 
 def download_file(filename, clientSocket, resume=False):
     global download_stopped
+    global connection_closed
     # Ensure the file path is relative to the directory of client.py
     temp_filename = f"{filename}.part"
     file_path = os.path.join(os.path.dirname(__file__), filename)
@@ -167,12 +169,22 @@ def download_file(filename, clientSocket, resume=False):
 
                     while action != "CONTINUE":
                         if action == "PAUSE":
-                            clientSocket.send(b"PAUSE")
+                            try:
+                                clientSocket.send(b"PAUSE")
+                            except Exception as e:
+                                connection_closed = True
+                                print("Connection closed by server.")
+                                return
                             print("Download paused. Resume download using CONTINUE.")
                             log_message("Download paused by user.")
 
                         elif action == "STOP":
-                            clientSocket.send(b"STOP")
+                            try:
+                                clientSocket.send(b"STOP")
+                            except Exception as e:
+                                connection_closed = True
+                                print("Connection closed by server.")
+                                return
                             print("Download stopped by user.")
                             log_message("Download stopped by user.")
                             clientSocket.close()
@@ -185,6 +197,9 @@ def download_file(filename, clientSocket, resume=False):
                         
                         action = input("Enter action: CONTINUE/PAUSE/STOP: ").strip().upper()
 
+                    if connection_closed:
+                        print("Connection closed by server.")
+                        return
                     
                     if action == "CONTINUE":
                         clientSocket.send(b"CONTINUE")
@@ -319,7 +334,7 @@ def main():
 
     command = input("Enter command (LIST | UPLOAD filename (optional -o flag) | DOWNLOAD filename | PAUSE | RESUME | DELETE filename | EXIT): ").strip()
     #prompts the user for a command and turns it into uppercase(to make it case-insensitive)
-    while command != "EXIT" and not download_stopped:
+    while command != "EXIT" and not download_stopped and not connection_closed:
         if command == "LIST":
             clientSocket.send(b"LIST")
             log_message("Sent LIST command")
@@ -338,14 +353,14 @@ def main():
         elif command.startswith("DOWNLOAD "):
             filename = command.split()[1]
             download_file(filename, clientSocket) #extracts file name ftom the command and calls the download function
-            if download_stopped:
+            if download_stopped or connection_closed:
                 break
 
         elif command.startswith("RESUME"):
             print(command)
             filename = command.split()[1]
             download_file(filename, clientSocket, resume=True) 
-            if download_stopped:
+            if download_stopped or connection_closed:
                 break
             
         elif command.startswith("DELETE "):

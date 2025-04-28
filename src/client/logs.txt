@@ -390,3 +390,42 @@
 2025-04-28 02:53:14,545 - Unauthorized view logs attemnpt
 2025-04-28 02:53:18,752 - Sent EXIT command
 2025-04-28 02:53:18,752 - Connection closed
+2025-04-28 03:14:06,099 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 03:14:16,043 - Login successful with role: user
+2025-04-28 03:14:26,466 - Requesting download for testing.md
+2025-04-28 03:14:26,467 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 03:14:26,467 - Saved download state for testing.md at offset 0
+2025-04-28 03:14:26,468 - Saved download state for testing.md at offset 1024
+2025-04-28 03:14:31,153 - Saved download state for testing.md at offset 1562
+2025-04-28 03:14:33,965 - Downloaded testing.md successfully (checksum verified)
+2025-04-28 03:14:33,965 - Cleared download state
+2025-04-28 03:14:39,937 - Sent EXIT command
+2025-04-28 03:14:39,938 - Connection closed
+2025-04-28 03:15:31,463 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 03:15:40,444 - Login successful with role: user
+2025-04-28 03:15:54,857 - Requesting download for testing.md
+2025-04-28 03:15:54,858 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 03:15:54,859 - Saved download state for testing.md at offset 0
+2025-04-28 03:15:54,859 - Saved download state for testing.md at offset 1024
+2025-04-28 03:15:58,626 - Download paused by user.
+2025-04-28 03:16:05,586 - Saved download state for testing.md at offset 1562
+2025-04-28 03:16:08,939 - Downloaded testing.md successfully (checksum verified)
+2025-04-28 03:16:08,940 - Cleared download state
+2025-04-28 03:16:13,609 - Sent EXIT command
+2025-04-28 03:16:13,610 - Connection closed
+2025-04-28 03:18:53,864 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 03:19:00,219 - Login successful with role: user
+2025-04-28 03:19:09,210 - Requesting download for testing.md
+2025-04-28 03:19:09,211 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 03:19:09,211 - Saved download state for testing.md at offset 0
+2025-04-28 03:19:09,212 - Saved download state for testing.md at offset 1024
+2025-04-28 03:19:15,802 - Download paused by user.
+2025-04-28 03:20:32,675 - Download error: [WinError 10053] An established connection was aborted by the software in your host machine
+2025-04-28 03:31:13,288 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 03:31:26,853 - Login successful with role: user
+2025-04-28 03:31:53,275 - Requesting download for testing.md
+2025-04-28 03:31:53,277 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 03:31:53,277 - Saved download state for testing.md at offset 0
+2025-04-28 03:31:53,278 - Saved download state for testing.md at offset 1024
+2025-04-28 03:31:57,531 - Download paused by user.
+2025-04-28 03:33:08,587 - Download error: [WinError 10053] An established connection was aborted by the software in your host machine

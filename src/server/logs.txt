@@ -39,3 +39,50 @@
 2025-04-28 02:53:14,544 - ('127.0.0.1', 54539) issued the command VIEW_LOGS
 2025-04-28 02:53:14,545 - Unauthorized view logs attemnpt by Michaelfrom('127.0.0.1', 54539)
 2025-04-28 02:53:14,545 - Closing connection with ('127.0.0.1', 54539)
+2025-04-28 03:14:06,099 - Connection with ('127.0.0.1', 54722) established
+2025-04-28 03:14:16,042 - ('127.0.0.1', 54722) sent login attempt: LOGIN Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
+2025-04-28 03:14:16,043 - ('127.0.0.1', 54722) authenticated as Michael successfully
+2025-04-28 03:14:26,466 - ('127.0.0.1', 54722) issued the command DOWNLOAD testing.md
+2025-04-28 03:14:26,467 - File size: 1562 and checksum: 24929 sent to ('127.0.0.1', 54722)
+2025-04-28 03:14:26,468 - Client ('127.0.0.1', 54722) is ready. Starting file transfer from offset 0.
+2025-04-28 03:14:26,468 - Sent chunk 0 to ('127.0.0.1', 54722). Progress: 65.56%
+2025-04-28 03:14:31,153 - Client ('127.0.0.1', 54722) requested to continue download after chunk 1.
+2025-04-28 03:14:31,153 - Sent chunk 1 to ('127.0.0.1', 54722). Progress: 100.00%
+2025-04-28 03:14:33,963 - Client ('127.0.0.1', 54722) requested to continue download after chunk 2.
+2025-04-28 03:14:33,964 - SUCCESS: File testing.md successfully sent to ('127.0.0.1', 54722)
+2025-04-28 03:14:39,938 - ('127.0.0.1', 54722) issued the command EXIT
+2025-04-28 03:14:39,938 - Closing connection with ('127.0.0.1', 54722)
+2025-04-28 03:15:31,463 - Connection with ('127.0.0.1', 54730) established
+2025-04-28 03:15:40,442 - ('127.0.0.1', 54730) sent login attempt: LOGIN Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
+2025-04-28 03:15:40,444 - ('127.0.0.1', 54730) authenticated as Michael successfully
+2025-04-28 03:15:54,858 - ('127.0.0.1', 54730) issued the command DOWNLOAD testing.md
+2025-04-28 03:15:54,858 - File size: 1562 and checksum: 24929 sent to ('127.0.0.1', 54730)
+2025-04-28 03:15:54,859 - Client ('127.0.0.1', 54730) is ready. Starting file transfer from offset 0.
+2025-04-28 03:15:54,859 - Sent chunk 0 to ('127.0.0.1', 54730). Progress: 65.56%
+2025-04-28 03:15:58,625 - Download paused by('127.0.0.1', 54730). Waiting up to 30 seconds to resume..
+2025-04-28 03:16:05,586 - Client ('127.0.0.1', 54730) requested to continue download after chunk 1.
+2025-04-28 03:16:05,586 - Sent chunk 1 to ('127.0.0.1', 54730). Progress: 100.00%
+2025-04-28 03:16:08,938 - Client ('127.0.0.1', 54730) requested to continue download after chunk 2.
+2025-04-28 03:16:08,938 - SUCCESS: File testing.md successfully sent to ('127.0.0.1', 54730)
+2025-04-28 03:16:13,610 - ('127.0.0.1', 54730) issued the command EXIT
+2025-04-28 03:16:13,610 - Closing connection with ('127.0.0.1', 54730)
+2025-04-28 03:18:53,864 - Connection with ('127.0.0.1', 54803) established
+2025-04-28 03:19:00,217 - ('127.0.0.1', 54803) sent login attempt: LOGIN Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
+2025-04-28 03:19:00,219 - ('127.0.0.1', 54803) authenticated as Michael successfully
+2025-04-28 03:19:09,210 - ('127.0.0.1', 54803) issued the command DOWNLOAD testing.md
+2025-04-28 03:19:09,211 - File size: 1562 and checksum: 24929 sent to ('127.0.0.1', 54803)
+2025-04-28 03:19:09,211 - Client ('127.0.0.1', 54803) is ready. Starting file transfer from offset 0.
+2025-04-28 03:19:09,212 - Sent chunk 0 to ('127.0.0.1', 54803). Progress: 65.56%
+2025-04-28 03:19:15,802 - Download paused by('127.0.0.1', 54803). Waiting up to 30 seconds to resume..
+2025-04-28 03:19:45,817 - Timeout:No response from ('127.0.0.1', 54803) after chunk 1. Aborting this transfer.
+2025-04-28 03:19:45,818 - Closing connection with ('127.0.0.1', 54803)
+2025-04-28 03:31:13,289 - Connection with ('127.0.0.1', 54893) established
+2025-04-28 03:31:26,851 - ('127.0.0.1', 54893) sent login attempt: LOGIN Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
+2025-04-28 03:31:26,853 - ('127.0.0.1', 54893) authenticated as Michael successfully
+2025-04-28 03:31:53,276 - ('127.0.0.1', 54893) issued the command DOWNLOAD testing.md
+2025-04-28 03:31:53,277 - File size: 1562 and checksum: 24929 sent to ('127.0.0.1', 54893)
+2025-04-28 03:31:53,277 - Client ('127.0.0.1', 54893) is ready. Starting file transfer from offset 0.
+2025-04-28 03:31:53,278 - Sent chunk 0 to ('127.0.0.1', 54893). Progress: 65.56%
+2025-04-28 03:31:57,531 - Download paused by('127.0.0.1', 54893). Waiting up to 30 seconds to resume..
+2025-04-28 03:32:27,533 - Timeout:No response from ('127.0.0.1', 54893) after chunk 1. Aborting this transfer.
+2025-04-28 03:32:27,534 - Closing connection with ('127.0.0.1', 54893)

@@ -3,6 +3,11 @@
 This is the first phase of the file sharing client server system for the computer networks course. The current progress made in this phase satisfies the connectivity requirements requested for the first phase. This README file is written by Michael Kolanjian.  
 The file structure is broken down into **client** and **server** folders. The **server** folder contains all the files related to the server, while the **client** folder contains all the files related to the client, as well as some txt files for testing.
 
+# How to Run:
+
+Open the advanced-file-sharing-system directory, go to src/server/server.py and hit run, then go to src/client/client.py and hit run. This will cause the system to run on the terminal.
+Remark: Please refer to the Technical Report instead of the below information since it is outdated.
+
 ## Team Members:
 
 - Michael Kolanjian  
