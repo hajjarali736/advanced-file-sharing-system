@@ -481,25 +481,28 @@ def handle_client(client_socket, addr):
                     
                     log_message(f"Admin {username} requested to view logs")
 
-                    file_path = "logs.txt"
-                    if (os.path.exists(file_path)):
+                    file_path = os.path.join(os.path.dirname(__file__), "logs.txt")
+                    file_path = os.path.abspath(file_path)
+
+                    if os.path.exists(file_path):
                         client_socket.send("AUTHORIZED".encode())
                         start_signal = client_socket.recv(1024).decode()
                         if start_signal == "START":
                             with open(file_path, "rb") as f:
                                 chunk = f.read(1024)
                                 while chunk:
-                                    client_socket.sendall(chunk )
+                                    client_socket.sendall(chunk)
                                     chunk = f.read(1024)
+                            print("Logs sent to client")
                             log_message(f"Logs sent to {username}")
                         else:
                             client_socket.send("ERROR: Invalid start signal".encode())
                             log_message(f"ERROR: {addr} sent an invalid start signal")
-                        with open(file_path, "rb") as f:
-                            client_socket.sendall(f.read())
-                            print("Logs sent to client")
-                            log_message(f"Logs sent to {addr}")
                         return
+                    else:
+                        print("Log file not found")
+                        client_socket.send("ERROR: Log file not found".encode())
+
                 except Exception as e:
                     client_socket.send(f"ERROR: {str(e)}".encode('utf-8'))
                     log_message(f"ERROR: File transfer with {addr} failed: {str(e)}")

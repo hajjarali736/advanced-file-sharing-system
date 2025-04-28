@@ -6,118 +6,36 @@
 2025-04-27 20:22:23,796 - Connection with ('127.0.0.1', 50746) established
 2025-04-27 20:22:29,654 - ('127.0.0.1', 50746) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
 2025-04-27 20:22:29,670 - ('127.0.0.1', 50746) failed login: User admin does not exist
-2025-04-27 20:22:29,670 - Closing connection with ('127.0.0.1', 50746)
-2025-04-27 20:23:05,653 - Connection with ('127.0.0.1', 50751) established
-2025-04-27 20:23:11,133 - ('127.0.0.1', 50751) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:23:11,146 - ('127.0.0.1', 50751) failed login: Invalid credentials for admin
-2025-04-27 20:23:11,146 - Closing connection with ('127.0.0.1', 50751)
-2025-04-27 20:23:35,142 - Connection with ('127.0.0.1', 50756) established
-2025-04-27 20:23:42,328 - ('127.0.0.1', 50756) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:23:42,328 - ('127.0.0.1', 50756) failed login: Invalid credentials for admin
-2025-04-27 20:23:42,328 - Closing connection with ('127.0.0.1', 50756)
-2025-04-27 20:25:01,087 - Connection with ('127.0.0.1', 50777) established
-2025-04-27 20:25:06,579 - ('127.0.0.1', 50777) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:25:06,579 - ('127.0.0.1', 50777) authenticated as admin successfully
-2025-04-27 20:25:15,465 - Closing connection with ('127.0.0.1', 50777)
-2025-04-27 20:26:03,563 - Connection with ('127.0.0.1', 50793) established
-2025-04-27 20:26:08,187 - ('127.0.0.1', 50793) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:26:08,187 - ('127.0.0.1', 50793) authenticated as admin successfully
-2025-04-27 20:26:19,128 - ('127.0.0.1', 50793) issued the command VIEW_LOGS
-2025-04-27 20:26:19,128 - Admin admin requested to view logs
-2025-04-27 20:26:19,128 - ERROR: File transfer with ('127.0.0.1', 50793) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:27:34,477 - ('127.0.0.1', 50793) issued the command VIEW_LOGS
-2025-04-27 20:27:34,477 - Admin admin requested to view logs
-2025-04-27 20:27:34,477 - ERROR: File transfer with ('127.0.0.1', 50793) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:27:37,615 - ('127.0.0.1', 50793) issued the command 
-2025-04-27 20:27:37,615 - Closing connection with ('127.0.0.1', 50793)
-2025-04-27 20:27:39,735 - Connection with ('127.0.0.1', 50810) established
-2025-04-27 20:27:45,826 - ('127.0.0.1', 50810) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:27:45,826 - ('127.0.0.1', 50810) authenticated as admin successfully
-2025-04-27 20:27:51,928 - ('127.0.0.1', 50810) issued the command VIEW_LOGS
-2025-04-27 20:27:51,928 - Admin admin requested to view logs
-2025-04-27 20:27:51,928 - ERROR: File transfer with ('127.0.0.1', 50810) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:28:27,189 - ('127.0.0.1', 50810) issued the command 
-2025-04-27 20:28:27,189 - Closing connection with ('127.0.0.1', 50810)
-2025-04-27 20:28:30,642 - Connection with ('127.0.0.1', 50822) established
-2025-04-27 20:28:47,844 - ('127.0.0.1', 50822) failed to login: No LOGIN command
-2025-04-27 20:28:47,844 - Closing connection with ('127.0.0.1', 50822)
-2025-04-27 20:28:53,898 - Connection with ('127.0.0.1', 50827) established
-2025-04-27 20:28:59,184 - ('127.0.0.1', 50827) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:28:59,196 - ('127.0.0.1', 50827) authenticated as admin successfully
-2025-04-27 20:29:04,712 - ('127.0.0.1', 50827) issued the command VIEW_LOGS
-2025-04-27 20:29:04,712 - Admin admin requested to view logs
-2025-04-27 20:29:04,712 - ERROR: File transfer with ('127.0.0.1', 50827) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:29:48,057 - ('127.0.0.1', 50827) issued the command 
-2025-04-27 20:29:48,057 - Closing connection with ('127.0.0.1', 50827)
-2025-04-27 20:29:50,707 - Connection with ('127.0.0.1', 50838) established
-2025-04-27 20:29:57,324 - ('127.0.0.1', 50838) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:29:57,342 - ('127.0.0.1', 50838) authenticated as admin successfully
-2025-04-27 20:30:16,741 - ('127.0.0.1', 50838) issued the command 
-2025-04-27 20:30:16,741 - Closing connection with ('127.0.0.1', 50838)
-2025-04-27 20:30:19,523 - Connection with ('127.0.0.1', 50840) established
-2025-04-27 20:30:24,228 - ('127.0.0.1', 50840) sent login attempt: LOGIN admin 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
-2025-04-27 20:30:24,241 - ('127.0.0.1', 50840) failed login: Invalid credentials for admin
-2025-04-27 20:30:24,243 - Closing connection with ('127.0.0.1', 50840)
-2025-04-27 20:30:27,783 - Connection with ('127.0.0.1', 50842) established
-2025-04-27 20:30:33,091 - ('127.0.0.1', 50842) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:30:33,107 - ('127.0.0.1', 50842) authenticated as admin successfully
-2025-04-27 20:30:37,439 - ('127.0.0.1', 50842) issued the command VIEW_LOGS
-2025-04-27 20:30:37,439 - Admin admin requested to view logs
-2025-04-27 20:30:37,439 - ERROR: File transfer with ('127.0.0.1', 50842) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:30:48,370 - ('127.0.0.1', 50842) issued the command 
-2025-04-27 20:30:48,370 - Closing connection with ('127.0.0.1', 50842)
-2025-04-27 20:30:50,713 - Connection with ('127.0.0.1', 50843) established
-2025-04-27 20:30:55,053 - ('127.0.0.1', 50843) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:30:55,053 - ('127.0.0.1', 50843) authenticated as admin successfully
-2025-04-27 20:30:58,472 - ('127.0.0.1', 50843) issued the command VIEW_LOGS
-2025-04-27 20:30:58,472 - Admin admin requested to view logs
-2025-04-27 20:30:58,472 - ERROR: File transfer with ('127.0.0.1', 50843) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:36:09,281 - ('127.0.0.1', 50843) issued the command 
-2025-04-27 20:36:09,281 - Closing connection with ('127.0.0.1', 50843)
-2025-04-27 20:36:10,843 - Connection with ('127.0.0.1', 50913) established
-2025-04-27 20:36:15,557 - ('127.0.0.1', 50913) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:36:15,560 - ('127.0.0.1', 50913) authenticated as admin successfully
-2025-04-27 20:36:20,249 - ('127.0.0.1', 50913) issued the command VIEW_LOGS
-2025-04-27 20:36:20,250 - Admin admin requested to view logs
-2025-04-27 20:36:20,250 - ERROR: File transfer with ('127.0.0.1', 50913) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:42:09,354 - Connection with ('127.0.0.1', 50981) established
-2025-04-27 20:42:14,106 - ('127.0.0.1', 50981) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:42:14,110 - ('127.0.0.1', 50981) authenticated as admin successfully
-2025-04-27 20:42:17,785 - ('127.0.0.1', 50981) issued the command VIEW_LOGS
-2025-04-27 20:42:17,786 - Admin admin requested to view logs
-2025-04-27 20:42:17,787 - ERROR: File transfer with ('127.0.0.1', 50981) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:52:45,641 - Connection with ('127.0.0.1', 51183) established
-2025-04-27 20:52:49,794 - ('127.0.0.1', 51183) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:52:49,797 - ('127.0.0.1', 51183) authenticated as admin successfully
-2025-04-27 20:52:52,805 - ('127.0.0.1', 51183) issued the command VIEW_LOGS
-2025-04-27 20:52:52,805 - Admin admin requested to view logs
-2025-04-27 20:53:25,208 - ERROR: ('127.0.0.1', 51183) sent an invalid start signal
-2025-04-27 20:53:25,210 - Closing connection with ('127.0.0.1', 51183)
-2025-04-27 20:53:29,996 - Connection with ('127.0.0.1', 51189) established
-2025-04-27 20:53:33,639 - ('127.0.0.1', 51189) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:53:33,642 - ('127.0.0.1', 51189) authenticated as admin successfully
-2025-04-27 20:53:37,345 - ('127.0.0.1', 51189) issued the command VIEW_LOGS
-2025-04-27 20:53:37,345 - Admin admin requested to view logs
-2025-04-27 20:53:37,351 - ERROR: File transfer with ('127.0.0.1', 51189) failed: a bytes-like object is required, not 'str'
-2025-04-27 20:55:10,603 - Closing connection with ('127.0.0.1', 51189)
-2025-04-27 20:56:09,408 - Connection with ('127.0.0.1', 51220) established
-2025-04-27 20:56:13,805 - ('127.0.0.1', 51220) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 20:56:13,810 - ('127.0.0.1', 51220) authenticated as admin successfully
-2025-04-27 20:56:17,916 - ('127.0.0.1', 51220) issued the command VIEW_LOGS
-2025-04-27 20:56:17,917 - Admin admin requested to view logs
-2025-04-27 20:56:17,923 - ERROR: File transfer with ('127.0.0.1', 51220) failed: a bytes-like object is required, not 'str'
-2025-04-27 21:01:21,296 - Closing connection with ('127.0.0.1', 51220)
-2025-04-27 21:01:26,266 - Connection with ('127.0.0.1', 51359) established
-2025-04-27 21:01:29,921 - ('127.0.0.1', 51359) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 21:01:29,923 - ('127.0.0.1', 51359) authenticated as admin successfully
-2025-04-27 21:01:33,536 - ('127.0.0.1', 51359) issued the command VIEW_LOGS
-2025-04-27 21:01:33,536 - Admin admin requested to view logs
-2025-04-27 21:01:33,541 - ERROR: File transfer with ('127.0.0.1', 51359) failed: a bytes-like object is required, not 'str'
-2025-04-27 21:03:40,519 - Connection with ('127.0.0.1', 51464) established
-2025-04-27 21:03:44,655 - ('127.0.0.1', 51464) sent login attempt: LOGIN admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
-2025-04-27 21:03:44,658 - ('127.0.0.1', 51464) authenticated as admin successfully
-2025-04-27 21:03:49,338 - ('127.0.0.1', 51464) issued the command VIEW_LOGS
-2025-04-27 21:03:49,338 - Admin admin requested to view logs
-2025-04-27 21:03:49,349 - Logs sent to admin
-2025-04-27 21:03:49,362 - Logs sent to ('127.0.0.1', 51464)
-2025-04-27 21:03:49,362 - Closing connection with ('127.0.0.1', 51464)
+2025-04-27 20:22:29,670 - Closing connection with ('127.0.0.1', 50746)2025-04-28 02:39:32,277 - Connection with ('127.0.0.1', 54413) established
+2025-04-28 02:39:39,367 - ('127.0.0.1', 54413) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-28 02:39:39,369 - ('127.0.0.1', 54413) authenticated as Admin successfully
+2025-04-28 02:39:43,511 - ('127.0.0.1', 54413) issued the command VIEW_LOGS
+2025-04-28 02:39:43,512 - Admin Admin requested to view logs
+2025-04-28 02:41:05,652 - Closing connection with ('127.0.0.1', 54413)
+2025-04-28 02:41:14,299 - Connection with ('127.0.0.1', 54417) established
+2025-04-28 02:41:21,127 - ('127.0.0.1', 54417) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-28 02:41:21,129 - ('127.0.0.1', 54417) authenticated as Admin successfully
+2025-04-28 02:41:25,687 - ('127.0.0.1', 54417) issued the command VIEW_LOGS
+2025-04-28 02:41:25,688 - Admin Admin requested to view logs
+2025-04-28 02:41:36,376 - ('127.0.0.1', 54417) issued the command EXIT
+2025-04-28 02:41:36,377 - Closing connection with ('127.0.0.1', 54417)
+2025-04-28 02:45:54,671 - Connection with ('127.0.0.1', 54444) established
+2025-04-28 02:46:01,496 - ('127.0.0.1', 54444) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-28 02:46:01,497 - ('127.0.0.1', 54444) authenticated as Admin successfully
+2025-04-28 02:46:09,672 - ('127.0.0.1', 54444) issued the command VIEW_LOGS
+2025-04-28 02:46:09,672 - Admin Admin requested to view logs
+2025-04-28 02:46:18,968 - ('127.0.0.1', 54444) issued the command EXIT
+2025-04-28 02:46:18,968 - Closing connection with ('127.0.0.1', 54444)
+2025-04-28 02:49:29,282 - Connection with ('127.0.0.1', 54510) established
+2025-04-28 02:49:37,728 - ('127.0.0.1', 54510) sent login attempt: LOGIN Admin 713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca
+2025-04-28 02:49:37,730 - ('127.0.0.1', 54510) authenticated as Admin successfully
+2025-04-28 02:49:42,664 - ('127.0.0.1', 54510) issued the command VIEW_LOGS
+2025-04-28 02:49:42,665 - Admin Admin requested to view logs
+2025-04-28 02:49:42,675 - Logs sent to Admin
+2025-04-28 02:49:42,675 - Closing connection with ('127.0.0.1', 54510)
+2025-04-28 02:52:55,483 - Connection with ('127.0.0.1', 54539) established
+2025-04-28 02:53:04,737 - ('127.0.0.1', 54539) sent login attempt: LOGIN Michael 2c4938071000a95c251ed523773344da68e00f4b0998b60b6f609586c9580157
+2025-04-28 02:53:04,739 - ('127.0.0.1', 54539) authenticated as Michael successfully
+2025-04-28 02:53:14,544 - ('127.0.0.1', 54539) issued the command VIEW_LOGS
+2025-04-28 02:53:14,545 - Unauthorized view logs attemnpt by Michaelfrom('127.0.0.1', 54539)
+2025-04-28 02:53:14,545 - Closing connection with ('127.0.0.1', 54539)

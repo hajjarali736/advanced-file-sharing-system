@@ -251,3 +251,142 @@
 2025-04-27 21:03:44,658 - Login successful with role: admin
 2025-04-27 21:03:44,659 - Admin privileges granted
 2025-04-27 21:03:49,362 - Logs viewed successfully.
+2025-04-28 00:48:20,240 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 00:48:33,299 - Login successful with role: user
+2025-04-28 00:48:49,529 - Sent LIST command
+2025-04-28 00:48:49,529 - Received file list
+2025-04-28 00:49:08,545 - Requesting download for testing.md
+2025-04-28 00:49:08,565 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 00:49:08,565 - Saved download state for testing.md at offset 0
+2025-04-28 00:49:08,566 - Saved download state for testing.md at offset 1024
+2025-04-28 00:49:18,040 - Saved download state for testing.md at offset 1562
+2025-04-28 00:49:23,523 - Downloaded testing.md successfully (checksum verified)
+2025-04-28 00:49:23,524 - Cleared download state
+2025-04-28 00:49:35,704 - Requesting download for testing.md
+2025-04-28 00:49:35,705 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 00:49:35,706 - Saved download state for testing.md at offset 0
+2025-04-28 00:49:35,706 - Saved download state for testing.md at offset 1024
+2025-04-28 00:49:42,961 - Download paused by user.
+2025-04-28 00:49:49,705 - Saved download state for testing.md at offset 1562
+2025-04-28 00:49:54,248 - Download stopped by user.
+2025-04-28 00:50:16,048 - Requesting download for testing.md
+2025-04-28 00:50:16,048 - Download error: [WinError 10053] An established connection was aborted by the software in your host machine
+2025-04-28 00:58:01,269 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 00:58:07,627 - Login successful with role: user
+2025-04-28 00:59:00,545 - Requesting download for testing.md
+2025-04-28 00:59:00,546 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 00:59:00,547 - Saved download state for testing.md at offset 0
+2025-04-28 00:59:00,547 - Saved download state for testing.md at offset 1024
+2025-04-28 00:59:08,826 - Download stopped by user.
+2025-04-28 01:06:48,219 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:06:58,012 - Login successful with role: user
+2025-04-28 01:07:06,170 - Requesting download for testing.md
+2025-04-28 01:07:06,171 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 01:07:06,171 - Saved download state for testing.md at offset 0
+2025-04-28 01:07:06,172 - Saved download state for testing.md at offset 1024
+2025-04-28 01:07:12,706 - Download stopped by user.
+2025-04-28 01:10:09,273 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:10:16,795 - Login successful with role: user
+2025-04-28 01:10:29,826 - Requesting download for testing.md
+2025-04-28 01:10:29,827 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 01:10:29,827 - Saved download state for testing.md at offset 0
+2025-04-28 01:10:29,828 - Saved download state for testing.md at offset 1024
+2025-04-28 01:10:34,777 - Download stopped by user.
+2025-04-28 01:15:38,298 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:15:46,499 - Login successful with role: user
+2025-04-28 01:15:57,818 - Requesting download for testing.md
+2025-04-28 01:15:57,819 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 01:15:57,820 - Saved download state for testing.md at offset 0
+2025-04-28 01:15:57,820 - Saved download state for testing.md at offset 1024
+2025-04-28 01:16:01,682 - Download stopped by user.
+2025-04-28 01:16:52,935 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:16:58,277 - Login successful with role: user
+2025-04-28 01:17:09,018 - Requesting download for testing.md
+2025-04-28 01:17:09,019 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 01:17:09,019 - Saved download state for testing.md at offset 0
+2025-04-28 01:17:09,020 - Saved download state for testing.md at offset 1024
+2025-04-28 01:17:13,026 - Download stopped by user.
+2025-04-28 01:32:11,985 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:32:23,749 - Login successful with role: user
+2025-04-28 01:32:32,196 - Requesting download for testing.md
+2025-04-28 01:32:32,197 - File size received: 1562 bytes, expected checksum: 24929
+2025-04-28 01:32:32,197 - Saved download state for testing.md at offset 0
+2025-04-28 01:32:32,198 - Saved download state for testing.md at offset 1024
+2025-04-28 01:32:36,723 - Download stopped by user.
+2025-04-28 01:32:36,724 - Connection closed
+2025-04-28 01:32:42,915 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:32:55,677 - Login successful with role: user
+2025-04-28 01:33:04,924 - Download error: ERROR: Invalid offset
+2025-04-28 01:34:46,403 - Invalid command. Format:
+2025-04-28 01:34:49,595 - Sent EXIT command
+2025-04-28 01:34:49,595 - Connection closed
+2025-04-28 01:47:08,214 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:48:30,156 - Sent EXIT command
+2025-04-28 01:48:30,157 - Connection closed
+2025-04-28 01:48:36,156 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 01:48:44,430 - Registration failed
+2025-04-28 02:07:44,560 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:07:53,255 - Login successful with role: admin
+2025-04-28 02:07:53,256 - Admin privileges granted
+2025-04-28 02:07:57,669 - Sent EXIT command
+2025-04-28 02:07:57,670 - Connection closed
+2025-04-28 02:08:58,272 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:09:05,751 - Login successful with role: user
+2025-04-28 02:09:09,726 - Sent EXIT command
+2025-04-28 02:09:09,726 - Connection closed
+2025-04-28 02:09:54,158 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:10:09,296 - Login failed
+2025-04-28 02:11:18,692 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:11:25,824 - Login successful with role: user
+2025-04-28 02:11:29,005 - Sent LIST command
+2025-04-28 02:11:29,006 - Received file list
+2025-04-28 02:11:32,950 - Sent EXIT command
+2025-04-28 02:11:32,950 - Connection closed
+2025-04-28 02:23:29,555 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:23:35,289 - Login successful with role: user
+2025-04-28 02:23:49,137 - Preparing to upload text.txt of size 1999 bytes with checksum 19155
+2025-04-28 02:23:49,139 - Upload response: SUCCESS: File received as text.txt (checksum verified)
+2025-04-28 02:24:36,855 - Preparing to upload text.txt of size 1999 bytes with checksum 19155
+2025-04-28 02:24:36,858 - Upload response: SUCCESS: File received as text(1).txt (checksum verified)
+2025-04-28 02:24:45,071 - Preparing to upload text.txt of size 1999 bytes with checksum 19155
+2025-04-28 02:24:45,074 - Upload response: SUCCESS: File received as text.txt (checksum verified)
+2025-04-28 02:24:53,326 - Sent EXIT command
+2025-04-28 02:24:53,327 - Connection closed
+2025-04-28 02:32:30,932 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:32:39,153 - Login successful with role: admin
+2025-04-28 02:32:39,154 - Admin privileges granted
+2025-04-28 02:32:58,337 - Delete response: SUCCESS: Deleted text(1).txt
+2025-04-28 02:33:11,183 - Sent LIST command
+2025-04-28 02:33:11,183 - Received file list
+2025-04-28 02:33:24,656 - Delete response: ERROR: File not found
+2025-04-28 02:33:28,663 - Sent EXIT command
+2025-04-28 02:33:28,663 - Connection closed
+2025-04-28 02:37:34,785 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:37:45,249 - Login successful with role: admin
+2025-04-28 02:37:45,250 - Admin privileges granted
+2025-04-28 02:39:32,276 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:39:39,369 - Login successful with role: admin
+2025-04-28 02:39:39,369 - Admin privileges granted
+2025-04-28 02:41:14,298 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:41:21,129 - Login successful with role: admin
+2025-04-28 02:41:21,130 - Admin privileges granted
+2025-04-28 02:41:25,688 - Unauthorized view logs attemnpt
+2025-04-28 02:41:36,376 - Sent EXIT command
+2025-04-28 02:41:36,377 - Connection closed
+2025-04-28 02:45:54,670 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:46:01,497 - Login successful with role: admin
+2025-04-28 02:46:01,497 - Admin privileges granted
+2025-04-28 02:46:09,673 - Unauthorized view logs attemnpt
+2025-04-28 02:46:18,968 - Sent EXIT command
+2025-04-28 02:46:18,968 - Connection closed
+2025-04-28 02:49:29,282 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:49:37,730 - Login successful with role: admin
+2025-04-28 02:49:37,731 - Admin privileges granted
+2025-04-28 02:49:42,676 - Logs viewed successfully.
+2025-04-28 02:49:47,864 - Sent EXIT command
+2025-04-28 02:49:47,864 - Connection closed
+2025-04-28 02:52:55,482 - Connection with ('127.0.0.1', 8926) established
+2025-04-28 02:53:04,739 - Login successful with role: user
+2025-04-28 02:53:14,545 - Unauthorized view logs attemnpt
+2025-04-28 02:53:18,752 - Sent EXIT command
+2025-04-28 02:53:18,752 - Connection closed
